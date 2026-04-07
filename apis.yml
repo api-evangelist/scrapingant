@@ -6,9 +6,9 @@ description: >-
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
-  - Scraping
   - Data Extraction
   - Proxies
+  - Scraping
 url: >-
   https://raw.githubusercontent.com/api-evangelist/scrapingant/refs/heads/main/apis.yml
 created: '2026-03-29'
@@ -22,9 +22,9 @@ apis:
       headless browsers, and CAPTCHA solving for reliable web data extraction.
     humanURL: https://scrapingant.com/
     tags:
-      - Scraping
       - Data Extraction
       - Proxies
+      - Scraping
     properties:
       - type: Documentation
         url: https://docs.scrapingant.com/
