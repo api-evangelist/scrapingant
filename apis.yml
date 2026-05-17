@@ -28,7 +28,7 @@ apis:
     properties:
       - type: Documentation
         url: https://docs.scrapingant.com/
-      - type: Getting Started
+      - type: GettingStarted
         url: https://docs.scrapingant.com/
 common:
   - type: Website
