@@ -31,6 +31,10 @@ apis:
       - type: GettingStarted
         url: https://docs.scrapingant.com/
 common:
+  - type: GitHubOrganization
+    url: https://github.com/ScrapingAnt
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/scrapingant
   - type: Website
     url: https://scrapingant.com/
   - type: Documentation
