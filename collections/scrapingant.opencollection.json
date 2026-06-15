@@ -1,0 +1,105 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "ScrapingAnt",
+    "version": "2.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "x-api-key",
+      "value": "{{x-api-key}}",
+      "placement": "query"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Scraping",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Scrape a URL",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.scrapingant.com/v2/general",
+            "params": [
+              {
+                "name": "x-api-key",
+                "value": "",
+                "type": "query",
+                "description": "ScrapingAnt API key."
+              },
+              {
+                "name": "url",
+                "value": "",
+                "type": "query",
+                "description": "URL to scrape (must be URL-encoded)."
+              },
+              {
+                "name": "browser",
+                "value": "",
+                "type": "query",
+                "description": "Enable a headless browser. Defaults to true."
+              },
+              {
+                "name": "return_page_source",
+                "value": "",
+                "type": "query",
+                "description": "Return the unaltered server response without JS rendering."
+              },
+              {
+                "name": "timeout",
+                "value": "",
+                "type": "query",
+                "description": "Request duration limit in seconds (5-60)."
+              },
+              {
+                "name": "cookies",
+                "value": "",
+                "type": "query",
+                "description": "Custom cookies for the request."
+              },
+              {
+                "name": "js_snippet",
+                "value": "",
+                "type": "query",
+                "description": "Base64-encoded JavaScript to execute after page load."
+              },
+              {
+                "name": "proxy_type",
+                "value": "",
+                "type": "query",
+                "description": "Proxy pool selection."
+              },
+              {
+                "name": "proxy_country",
+                "value": "",
+                "type": "query",
+                "description": "ISO country code for geo-targeted proxy."
+              },
+              {
+                "name": "wait_for_selector",
+                "value": "",
+                "type": "query",
+                "description": "CSS selector to wait for before returning."
+              },
+              {
+                "name": "block_resource",
+                "value": "",
+                "type": "query",
+                "description": "Resource types to block (repeatable)."
+              }
+            ]
+          },
+          "docs": "Scrape a URL"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

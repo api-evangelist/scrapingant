@@ -1,0 +1,330 @@
+{
+  "item": [
+    {
+      "id": "2e979060-b092-434a-b590-4c1b928e951c",
+      "name": "Scraping",
+      "description": {
+        "content": "",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "f1d1f46c-48ef-4161-a48b-ed2913b672a2",
+          "name": "Scrape a URL",
+          "request": {
+            "name": "Scrape a URL",
+            "description": {},
+            "url": {
+              "path": [
+                "general"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "x-api-key",
+                  "value": "<string>",
+                  "description": "(Required) ScrapingAnt API key."
+                },
+                {
+                  "disabled": false,
+                  "key": "url",
+                  "value": "<uri>",
+                  "description": "(Required) URL to scrape (must be URL-encoded)."
+                },
+                {
+                  "disabled": false,
+                  "key": "browser",
+                  "value": "<boolean>",
+                  "description": "Enable a headless browser. Defaults to true."
+                },
+                {
+                  "disabled": false,
+                  "key": "return_page_source",
+                  "value": "<boolean>",
+                  "description": "Return the unaltered server response without JS rendering."
+                },
+                {
+                  "disabled": false,
+                  "key": "timeout",
+                  "value": "<integer>",
+                  "description": "Request duration limit in seconds (5-60)."
+                },
+                {
+                  "disabled": false,
+                  "key": "cookies",
+                  "value": "<string>",
+                  "description": "Custom cookies for the request."
+                },
+                {
+                  "disabled": false,
+                  "key": "js_snippet",
+                  "value": "<string>",
+                  "description": "Base64-encoded JavaScript to execute after page load."
+                },
+                {
+                  "disabled": false,
+                  "key": "proxy_type",
+                  "value": "<string>",
+                  "description": "Proxy pool selection."
+                },
+                {
+                  "disabled": false,
+                  "key": "proxy_country",
+                  "value": "<string>",
+                  "description": "ISO country code for geo-targeted proxy."
+                },
+                {
+                  "disabled": false,
+                  "key": "wait_for_selector",
+                  "value": "<string>",
+                  "description": "CSS selector to wait for before returning."
+                },
+                {
+                  "disabled": false,
+                  "key": "block_resource",
+                  "value": "<string>",
+                  "description": "Resource types to block (repeatable)."
+                },
+                {
+                  "disabled": false,
+                  "key": "block_resource",
+                  "value": "<string>",
+                  "description": "Resource types to block (repeatable)."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/html"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "508c949b-8899-4b24-8e79-5843a8285ef9",
+              "name": "HTML body of the target page.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "general"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "x-api-key",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "url",
+                      "value": "<uri>"
+                    },
+                    {
+                      "key": "browser",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "return_page_source",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "cookies",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "js_snippet",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "proxy_type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "proxy_country",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "wait_for_selector",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "block_resource",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "block_resource",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "x-api-key",
+                      "value": "<API Key>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "text/html"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/html"
+                }
+              ],
+              "body": "string",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "458385a6-67a0-4221-a199-759c3f70fdb8",
+              "name": "Client error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "general"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "x-api-key",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "url",
+                      "value": "<uri>"
+                    },
+                    {
+                      "key": "browser",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "return_page_source",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": "<integer>"
+                    },
+                    {
+                      "key": "cookies",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "js_snippet",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "proxy_type",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "proxy_country",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "wait_for_selector",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "block_resource",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "block_resource",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "x-api-key",
+                      "value": "<API Key>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"detail\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.scrapingant.com/v2",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "x-api-key"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}"
+      },
+      {
+        "key": "in",
+        "value": "query"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "bf62ebda-9f41-4a5c-bb0c-91609ff8ce13",
+    "name": "ScrapingAnt",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "ScrapingAnt is a web scraping API service that handles proxy rotation,\nheadless browsers, and CAPTCHA solving for reliable web data extraction.\nSource: https://docs.scrapingant.com/\n",
+      "type": "text/plain"
+    }
+  }
+}
