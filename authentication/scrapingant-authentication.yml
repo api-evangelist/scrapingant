@@ -1,0 +1,16 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/scrapingant-openapi.yml
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - query
+schemes:
+- name: ApiKeyAuth
+  type: apiKey
+  in: query
+  parameter: x-api-key
+  description: ScrapingAnt API key (also accepted as header x-api-key).
+  sources:
+  - openapi/scrapingant-openapi.yml

@@ -31,6 +31,10 @@ apis:
       - type: GettingStarted
         url: https://docs.scrapingant.com/
 common:
+  - type: DomainSecurity
+    url: security/scrapingant-domain-security.yml
+  - type: Authentication
+    url: authentication/scrapingant-authentication.yml
   - type: GitHubOrganization
     url: https://github.com/ScrapingAnt
   - type: LinkedIn
@@ -39,6 +43,8 @@ common:
     url: https://scrapingant.com/
   - type: Documentation
     url: https://docs.scrapingant.com/
+  - url: https://scrapingant.com/blog/rss.xml
+    type: Blog
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
