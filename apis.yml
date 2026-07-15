@@ -31,6 +31,8 @@ apis:
       - type: GettingStarted
         url: https://docs.scrapingant.com/
 common:
+  - type: AgenticAccess
+    url: agentic-access/scrapingant-agentic-access.yml
   - type: DomainSecurity
     url: security/scrapingant-domain-security.yml
   - type: Authentication
