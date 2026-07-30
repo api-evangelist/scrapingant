@@ -4,7 +4,20 @@ description: >-
   ScrapingAnt is a web scraping API service that handles proxy rotation,
   headless browsers, and CAPTCHA solving for reliable web data extraction.
 type: Index
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/scrapingant.png
 tags:
   - Data Extraction
   - Proxies
@@ -15,21 +28,30 @@ created: '2026-03-29'
 modified: '2026-03-29'
 specificationVersion: '0.19'
 apis:
-  - aid: scrapingant:scrapingant
-    name: ScrapingAnt
-    description: >-
-      ScrapingAnt is a web scraping API service that handles proxy rotation,
-      headless browsers, and CAPTCHA solving for reliable web data extraction.
-    humanURL: https://scrapingant.com/
-    tags:
-      - Data Extraction
-      - Proxies
-      - Scraping
-    properties:
-      - type: Documentation
-        url: https://docs.scrapingant.com/
-      - type: GettingStarted
-        url: https://docs.scrapingant.com/
+- aid: scrapingant:scrapingant
+  name: ScrapingAnt
+  description: >-
+    ScrapingAnt is a web scraping API service that handles proxy rotation, headless browsers, and CAPTCHA
+    solving for reliable web data extraction.
+  humanURL: https://scrapingant.com/
+  tags:
+  - Data Extraction
+  - Proxies
+  - Scraping
+  properties:
+  - type: Documentation
+    url: https://docs.scrapingant.com/
+  - type: GettingStarted
+    url: https://docs.scrapingant.com/
+- aid: scrapingant:scrapingant-scraping-api
+  name: ScrapingAnt Scraping API
+  description: The Scraping API from ScrapingAnt — 1 operation(s) for scraping.
+  humanURL: https://scrapingant.com/
+  tags:
+  - Scraping
+  properties:
+  - type: OpenAPI
+    url: openapi/scrapingant-scraping-api-openapi.yml
 common:
   - type: AgenticAccess
     url: agentic-access/scrapingant-agentic-access.yml
