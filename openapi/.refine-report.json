@@ -1,0 +1,14 @@
+{
+  "provider": "scrapingant",
+  "sources": [
+    "scrapingant-scraping-api-openapi.yml"
+  ],
+  "outputs": [
+    "scrapingant-scraping-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
