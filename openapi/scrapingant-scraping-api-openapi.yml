@@ -1,114 +1,45 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: ScrapingAnt Scraping API
-  description: 'ScrapingAnt is a web scraping API service that handles proxy rotation,
-
-    headless browsers, and CAPTCHA solving for reliable web data extraction.
-
-    Source: https://docs.scrapingant.com/
-
-    '
-  version: '2.0'
+  description: ScrapingAnt web scraping API. Harvested verbatim from the provider's published OpenAPI at https://api.scrapingant.com/openapi.json
+    on 2026-08-29 and refined into one document per tag. The original document declares no tags and reuses a single
+    operationId across all five HTTP methods on /v2/general; unique operationIds were assigned here and the divergence
+    is recorded in overlays/scrapingant-scraping-api-overlay.yaml. No operation, parameter, response or schema was
+    added, removed or altered.
+  version: v2
 servers:
-- url: https://api.scrapingant.com/v2
-  description: ScrapingAnt v2
+- url: https://api.scrapingant.com
+  description: Production ScrapingAnt API
 security:
 - ApiKeyAuth: []
 tags:
 - name: Scraping
 paths:
-  /general:
-    get:
-      summary: Scrape a URL
-      operationId: scrape
-      tags:
-      - Scraping
-      parameters:
-      - $ref: '#/components/parameters/ApiKey'
-      - name: url
-        in: query
-        required: true
-        description: URL to scrape (must be URL-encoded).
-        schema:
-          type: string
-          format: uri
-      - name: browser
-        in: query
-        description: Enable a headless browser. Defaults to true.
-        schema:
-          type: boolean
-      - name: return_page_source
-        in: query
-        description: Return the unaltered server response without JS rendering.
-        schema:
-          type: boolean
-      - name: timeout
-        in: query
-        description: Request duration limit in seconds (5-60).
-        schema:
-          type: integer
-          minimum: 5
-          maximum: 60
-      - name: cookies
-        in: query
-        description: Custom cookies for the request.
-        schema:
-          type: string
-      - name: js_snippet
-        in: query
-        description: Base64-encoded JavaScript to execute after page load.
-        schema:
-          type: string
-      - name: proxy_type
-        in: query
-        description: Proxy pool selection.
-        schema:
-          type: string
-          enum:
-          - datacenter
-          - residential
-      - name: proxy_country
-        in: query
-        description: ISO country code for geo-targeted proxy.
-        schema:
-          type: string
-      - name: wait_for_selector
-        in: query
-        description: CSS selector to wait for before returning.
-        schema:
-          type: string
-      - name: block_resource
-        in: query
-        description: Resource types to block (repeatable).
-        schema:
-          type: array
-          items:
-            type: string
-            enum:
-            - document
-            - stylesheet
-            - image
-            - media
-            - font
-            - script
-            - texttrack
-            - xhr
-            - fetch
-            - eventsource
-            - websocket
-            - manifest
-            - other
-        style: form
-        explode: true
+  /v2/general:
+    post:
+      summary: Scrapingant General Request (POST)
+      operationId: scrapingant_general_request_v2_general_post
       responses:
         '200':
-          description: HTML body of the target page.
+          description: Successful response. ScrapingAnt web scraping API endpoint returns plain html content  of
+            the scraped web page
           content:
-            text/html:
+            application/json:
               schema:
                 type: string
-        4XX:
-          description: Client error
+                example: <html><head><title>Example</title></head><body><h1>Hello, World!</h1></body></html>
+        '422':
+          description: Invalid value provided. Please, look into detail for more info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '400':
+          description: Wrong request format. Make sure that you're using a proper JSON input.
           content:
             application/json:
               schema:
@@ -116,18 +47,856 @@ paths:
                 properties:
                   detail:
                     type: string
+        '403':
+          description: The API token is wrong or you have exceeded the API credits limit.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '404':
+          description: The requested URL is not reachable. Please, check it in your browser or try again.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '405':
+          description: 'The API endpoint can only be accessed using the following HTTP methods: GET, POST, PUT,
+            DELETE.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '409':
+          description: Concurrent requests limit exceeded. Please, try again or upgrade to the paid plan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '423':
+          description: The anti-bot detection system has detected the request. Please, retry or change the request
+            settings.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '500':
+          description: Something went wrong with the server side code. Rare case. We're recommending to contact
+            us in this case.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+      parameters:
+      - in: query
+        name: x-api-key
+        required: true
+        schema:
+          type: string
+        description: API token, required for authentication. You can find your API token on the dashboard page in
+          the user's admin panel.
+      - in: query
+        name: url
+        required: true
+        schema:
+          type: string
+        description: URL to scrape
+      - in: query
+        name: browser
+        required: false
+        schema:
+          type: boolean
+        description: 'Enables using headless browser for scraping. Default: true'
+        example: true
+      - in: query
+        name: return_page_source
+        required: false
+        schema:
+          type: boolean
+        description: 'Enables returning data returned by the server and unaltered by the browser. Default: false.
+          When true - JS won''t be rendered. This feature works only with browser=true'
+        example: false
+      - in: query
+        name: cookies
+        required: false
+        schema:
+          type: string
+        description: Cookies to pass with a scraping request to the target site.
+        example: cookie_name1=cookie_value1;cookie_name2=cookie_value2
+      - in: query
+        name: js_snippet
+        required: false
+        schema:
+          type: string
+        description: Base64 encoded JS snippet to run once page being loaded in the ScrapingAnt browser. This feature
+          works only with browser=true.
+        example: d2luZG93LnNjcm9sbFRvKDAsZG9jdW1lbnQuYm9keS5zY3JvbGxIZWlnaHQpOwphd2FpdCBuZXcgUHJvbWlzZShyID0+IHNldFRpbWVvdXQociwgMjAwMCkpOw==
+      - in: query
+        name: proxy_type
+        required: false
+        schema:
+          type: string
+        description: 'Specifies proxy type to make request from. Default: datacenter. one of: datacenter, residential'
+        example: datacenter
+      - in: query
+        name: proxy_country
+        required: false
+        schema:
+          type: string
+        description: Specifies proxy country to make request from. If not specified, the request will be made from
+          a random country.
+        example: US
+      - in: query
+        name: wait_for_selector
+        required: false
+        schema:
+          type: string
+        description: The CSS selector of the element our service will wait for before returning result. This feature
+          works only with browser=true
+        example: .my-element
+      - in: query
+        name: block_resource
+        required: false
+        schema:
+          type: string
+        description: 'Block resource types. Prevents cloud browser from loading specified resource types. Can be
+          repeated in case several resource types should be blocked. This feature works only with browser=true.
+          Available resource types: document, stylesheet, image, media, font, script, texttrack, xhr, fetch, eventsource,
+          websocket, manifest, other'
+        example: document
+      tags:
+      - Scraping
+      description: Scrape the target URL through the ScrapingAnt cloud browser and rotating proxy pool. The POST
+        method is proxied through to the target site.
+    get:
+      summary: Scrapingant General Request (GET)
+      operationId: scrapingant_general_request_v2_general_get
+      responses:
+        '200':
+          description: Successful response. ScrapingAnt web scraping API endpoint returns plain html content  of
+            the scraped web page
+          content:
+            application/json:
+              schema:
+                type: string
+                example: <html><head><title>Example</title></head><body><h1>Hello, World!</h1></body></html>
+        '422':
+          description: Invalid value provided. Please, look into detail for more info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '400':
+          description: Wrong request format. Make sure that you're using a proper JSON input.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '403':
+          description: The API token is wrong or you have exceeded the API credits limit.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '404':
+          description: The requested URL is not reachable. Please, check it in your browser or try again.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '405':
+          description: 'The API endpoint can only be accessed using the following HTTP methods: GET, POST, PUT,
+            DELETE.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '409':
+          description: Concurrent requests limit exceeded. Please, try again or upgrade to the paid plan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '423':
+          description: The anti-bot detection system has detected the request. Please, retry or change the request
+            settings.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '500':
+          description: Something went wrong with the server side code. Rare case. We're recommending to contact
+            us in this case.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+      parameters:
+      - in: query
+        name: x-api-key
+        required: true
+        schema:
+          type: string
+        description: API token, required for authentication. You can find your API token on the dashboard page in
+          the user's admin panel.
+      - in: query
+        name: url
+        required: true
+        schema:
+          type: string
+        description: URL to scrape
+      - in: query
+        name: browser
+        required: false
+        schema:
+          type: boolean
+        description: 'Enables using headless browser for scraping. Default: true'
+        example: true
+      - in: query
+        name: return_page_source
+        required: false
+        schema:
+          type: boolean
+        description: 'Enables returning data returned by the server and unaltered by the browser. Default: false.
+          When true - JS won''t be rendered. This feature works only with browser=true'
+        example: false
+      - in: query
+        name: cookies
+        required: false
+        schema:
+          type: string
+        description: Cookies to pass with a scraping request to the target site.
+        example: cookie_name1=cookie_value1;cookie_name2=cookie_value2
+      - in: query
+        name: js_snippet
+        required: false
+        schema:
+          type: string
+        description: Base64 encoded JS snippet to run once page being loaded in the ScrapingAnt browser. This feature
+          works only with browser=true.
+        example: d2luZG93LnNjcm9sbFRvKDAsZG9jdW1lbnQuYm9keS5zY3JvbGxIZWlnaHQpOwphd2FpdCBuZXcgUHJvbWlzZShyID0+IHNldFRpbWVvdXQociwgMjAwMCkpOw==
+      - in: query
+        name: proxy_type
+        required: false
+        schema:
+          type: string
+        description: 'Specifies proxy type to make request from. Default: datacenter. one of: datacenter, residential'
+        example: datacenter
+      - in: query
+        name: proxy_country
+        required: false
+        schema:
+          type: string
+        description: Specifies proxy country to make request from. If not specified, the request will be made from
+          a random country.
+        example: US
+      - in: query
+        name: wait_for_selector
+        required: false
+        schema:
+          type: string
+        description: The CSS selector of the element our service will wait for before returning result. This feature
+          works only with browser=true
+        example: .my-element
+      - in: query
+        name: block_resource
+        required: false
+        schema:
+          type: string
+        description: 'Block resource types. Prevents cloud browser from loading specified resource types. Can be
+          repeated in case several resource types should be blocked. This feature works only with browser=true.
+          Available resource types: document, stylesheet, image, media, font, script, texttrack, xhr, fetch, eventsource,
+          websocket, manifest, other'
+        example: document
+      tags:
+      - Scraping
+      description: Scrape the target URL through the ScrapingAnt cloud browser and rotating proxy pool. The GET
+        method is proxied through to the target site.
+    put:
+      summary: Scrapingant General Request (PUT)
+      operationId: scrapingant_general_request_v2_general_put
+      responses:
+        '200':
+          description: Successful response. ScrapingAnt web scraping API endpoint returns plain html content  of
+            the scraped web page
+          content:
+            application/json:
+              schema:
+                type: string
+                example: <html><head><title>Example</title></head><body><h1>Hello, World!</h1></body></html>
+        '422':
+          description: Invalid value provided. Please, look into detail for more info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '400':
+          description: Wrong request format. Make sure that you're using a proper JSON input.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '403':
+          description: The API token is wrong or you have exceeded the API credits limit.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '404':
+          description: The requested URL is not reachable. Please, check it in your browser or try again.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '405':
+          description: 'The API endpoint can only be accessed using the following HTTP methods: GET, POST, PUT,
+            DELETE.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '409':
+          description: Concurrent requests limit exceeded. Please, try again or upgrade to the paid plan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '423':
+          description: The anti-bot detection system has detected the request. Please, retry or change the request
+            settings.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '500':
+          description: Something went wrong with the server side code. Rare case. We're recommending to contact
+            us in this case.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+      parameters:
+      - in: query
+        name: x-api-key
+        required: true
+        schema:
+          type: string
+        description: API token, required for authentication. You can find your API token on the dashboard page in
+          the user's admin panel.
+      - in: query
+        name: url
+        required: true
+        schema:
+          type: string
+        description: URL to scrape
+      - in: query
+        name: browser
+        required: false
+        schema:
+          type: boolean
+        description: 'Enables using headless browser for scraping. Default: true'
+        example: true
+      - in: query
+        name: return_page_source
+        required: false
+        schema:
+          type: boolean
+        description: 'Enables returning data returned by the server and unaltered by the browser. Default: false.
+          When true - JS won''t be rendered. This feature works only with browser=true'
+        example: false
+      - in: query
+        name: cookies
+        required: false
+        schema:
+          type: string
+        description: Cookies to pass with a scraping request to the target site.
+        example: cookie_name1=cookie_value1;cookie_name2=cookie_value2
+      - in: query
+        name: js_snippet
+        required: false
+        schema:
+          type: string
+        description: Base64 encoded JS snippet to run once page being loaded in the ScrapingAnt browser. This feature
+          works only with browser=true.
+        example: d2luZG93LnNjcm9sbFRvKDAsZG9jdW1lbnQuYm9keS5zY3JvbGxIZWlnaHQpOwphd2FpdCBuZXcgUHJvbWlzZShyID0+IHNldFRpbWVvdXQociwgMjAwMCkpOw==
+      - in: query
+        name: proxy_type
+        required: false
+        schema:
+          type: string
+        description: 'Specifies proxy type to make request from. Default: datacenter. one of: datacenter, residential'
+        example: datacenter
+      - in: query
+        name: proxy_country
+        required: false
+        schema:
+          type: string
+        description: Specifies proxy country to make request from. If not specified, the request will be made from
+          a random country.
+        example: US
+      - in: query
+        name: wait_for_selector
+        required: false
+        schema:
+          type: string
+        description: The CSS selector of the element our service will wait for before returning result. This feature
+          works only with browser=true
+        example: .my-element
+      - in: query
+        name: block_resource
+        required: false
+        schema:
+          type: string
+        description: 'Block resource types. Prevents cloud browser from loading specified resource types. Can be
+          repeated in case several resource types should be blocked. This feature works only with browser=true.
+          Available resource types: document, stylesheet, image, media, font, script, texttrack, xhr, fetch, eventsource,
+          websocket, manifest, other'
+        example: document
+      tags:
+      - Scraping
+      description: Scrape the target URL through the ScrapingAnt cloud browser and rotating proxy pool. The PUT
+        method is proxied through to the target site.
+    patch:
+      summary: Scrapingant General Request (PATCH)
+      operationId: scrapingant_general_request_v2_general_patch
+      responses:
+        '200':
+          description: Successful response. ScrapingAnt web scraping API endpoint returns plain html content  of
+            the scraped web page
+          content:
+            application/json:
+              schema:
+                type: string
+                example: <html><head><title>Example</title></head><body><h1>Hello, World!</h1></body></html>
+        '422':
+          description: Invalid value provided. Please, look into detail for more info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '400':
+          description: Wrong request format. Make sure that you're using a proper JSON input.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '403':
+          description: The API token is wrong or you have exceeded the API credits limit.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '404':
+          description: The requested URL is not reachable. Please, check it in your browser or try again.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '405':
+          description: 'The API endpoint can only be accessed using the following HTTP methods: GET, POST, PUT,
+            DELETE.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '409':
+          description: Concurrent requests limit exceeded. Please, try again or upgrade to the paid plan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '423':
+          description: The anti-bot detection system has detected the request. Please, retry or change the request
+            settings.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '500':
+          description: Something went wrong with the server side code. Rare case. We're recommending to contact
+            us in this case.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+      parameters:
+      - in: query
+        name: x-api-key
+        required: true
+        schema:
+          type: string
+        description: API token, required for authentication. You can find your API token on the dashboard page in
+          the user's admin panel.
+      - in: query
+        name: url
+        required: true
+        schema:
+          type: string
+        description: URL to scrape
+      - in: query
+        name: browser
+        required: false
+        schema:
+          type: boolean
+        description: 'Enables using headless browser for scraping. Default: true'
+        example: true
+      - in: query
+        name: return_page_source
+        required: false
+        schema:
+          type: boolean
+        description: 'Enables returning data returned by the server and unaltered by the browser. Default: false.
+          When true - JS won''t be rendered. This feature works only with browser=true'
+        example: false
+      - in: query
+        name: cookies
+        required: false
+        schema:
+          type: string
+        description: Cookies to pass with a scraping request to the target site.
+        example: cookie_name1=cookie_value1;cookie_name2=cookie_value2
+      - in: query
+        name: js_snippet
+        required: false
+        schema:
+          type: string
+        description: Base64 encoded JS snippet to run once page being loaded in the ScrapingAnt browser. This feature
+          works only with browser=true.
+        example: d2luZG93LnNjcm9sbFRvKDAsZG9jdW1lbnQuYm9keS5zY3JvbGxIZWlnaHQpOwphd2FpdCBuZXcgUHJvbWlzZShyID0+IHNldFRpbWVvdXQociwgMjAwMCkpOw==
+      - in: query
+        name: proxy_type
+        required: false
+        schema:
+          type: string
+        description: 'Specifies proxy type to make request from. Default: datacenter. one of: datacenter, residential'
+        example: datacenter
+      - in: query
+        name: proxy_country
+        required: false
+        schema:
+          type: string
+        description: Specifies proxy country to make request from. If not specified, the request will be made from
+          a random country.
+        example: US
+      - in: query
+        name: wait_for_selector
+        required: false
+        schema:
+          type: string
+        description: The CSS selector of the element our service will wait for before returning result. This feature
+          works only with browser=true
+        example: .my-element
+      - in: query
+        name: block_resource
+        required: false
+        schema:
+          type: string
+        description: 'Block resource types. Prevents cloud browser from loading specified resource types. Can be
+          repeated in case several resource types should be blocked. This feature works only with browser=true.
+          Available resource types: document, stylesheet, image, media, font, script, texttrack, xhr, fetch, eventsource,
+          websocket, manifest, other'
+        example: document
+      tags:
+      - Scraping
+      description: Scrape the target URL through the ScrapingAnt cloud browser and rotating proxy pool. The PATCH
+        method is proxied through to the target site.
+    delete:
+      summary: Scrapingant General Request (DELETE)
+      operationId: scrapingant_general_request_v2_general_delete
+      responses:
+        '200':
+          description: Successful response. ScrapingAnt web scraping API endpoint returns plain html content  of
+            the scraped web page
+          content:
+            application/json:
+              schema:
+                type: string
+                example: <html><head><title>Example</title></head><body><h1>Hello, World!</h1></body></html>
+        '422':
+          description: Invalid value provided. Please, look into detail for more info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '400':
+          description: Wrong request format. Make sure that you're using a proper JSON input.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '403':
+          description: The API token is wrong or you have exceeded the API credits limit.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '404':
+          description: The requested URL is not reachable. Please, check it in your browser or try again.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '405':
+          description: 'The API endpoint can only be accessed using the following HTTP methods: GET, POST, PUT,
+            DELETE.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '409':
+          description: Concurrent requests limit exceeded. Please, try again or upgrade to the paid plan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '423':
+          description: The anti-bot detection system has detected the request. Please, retry or change the request
+            settings.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+        '500':
+          description: Something went wrong with the server side code. Rare case. We're recommending to contact
+            us in this case.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+      parameters:
+      - in: query
+        name: x-api-key
+        required: true
+        schema:
+          type: string
+        description: API token, required for authentication. You can find your API token on the dashboard page in
+          the user's admin panel.
+      - in: query
+        name: url
+        required: true
+        schema:
+          type: string
+        description: URL to scrape
+      - in: query
+        name: browser
+        required: false
+        schema:
+          type: boolean
+        description: 'Enables using headless browser for scraping. Default: true'
+        example: true
+      - in: query
+        name: return_page_source
+        required: false
+        schema:
+          type: boolean
+        description: 'Enables returning data returned by the server and unaltered by the browser. Default: false.
+          When true - JS won''t be rendered. This feature works only with browser=true'
+        example: false
+      - in: query
+        name: cookies
+        required: false
+        schema:
+          type: string
+        description: Cookies to pass with a scraping request to the target site.
+        example: cookie_name1=cookie_value1;cookie_name2=cookie_value2
+      - in: query
+        name: js_snippet
+        required: false
+        schema:
+          type: string
+        description: Base64 encoded JS snippet to run once page being loaded in the ScrapingAnt browser. This feature
+          works only with browser=true.
+        example: d2luZG93LnNjcm9sbFRvKDAsZG9jdW1lbnQuYm9keS5zY3JvbGxIZWlnaHQpOwphd2FpdCBuZXcgUHJvbWlzZShyID0+IHNldFRpbWVvdXQociwgMjAwMCkpOw==
+      - in: query
+        name: proxy_type
+        required: false
+        schema:
+          type: string
+        description: 'Specifies proxy type to make request from. Default: datacenter. one of: datacenter, residential'
+        example: datacenter
+      - in: query
+        name: proxy_country
+        required: false
+        schema:
+          type: string
+        description: Specifies proxy country to make request from. If not specified, the request will be made from
+          a random country.
+        example: US
+      - in: query
+        name: wait_for_selector
+        required: false
+        schema:
+          type: string
+        description: The CSS selector of the element our service will wait for before returning result. This feature
+          works only with browser=true
+        example: .my-element
+      - in: query
+        name: block_resource
+        required: false
+        schema:
+          type: string
+        description: 'Block resource types. Prevents cloud browser from loading specified resource types. Can be
+          repeated in case several resource types should be blocked. This feature works only with browser=true.
+          Available resource types: document, stylesheet, image, media, font, script, texttrack, xhr, fetch, eventsource,
+          websocket, manifest, other'
+        example: document
+      tags:
+      - Scraping
+      description: Scrape the target URL through the ScrapingAnt cloud browser and rotating proxy pool. The DELETE
+        method is proxied through to the target site.
 components:
-  parameters:
-    ApiKey:
-      name: x-api-key
-      in: query
-      required: true
-      description: ScrapingAnt API key.
-      schema:
-        type: string
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
       in: query
       name: x-api-key
-      description: ScrapingAnt API key (also accepted as header x-api-key).
+      description: ScrapingAnt API key, passed as the x-api-key query parameter. The provider also accepts it as
+        an x-api-key request header (docs.scrapingant.com/request-response-format).

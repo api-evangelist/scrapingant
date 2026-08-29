@@ -3,88 +3,172 @@ specificationVersion: '0.1'
 schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
 provider: ScrapingAnt
 providerId: scrapingant
+generated: '2026-08-29'
+method: searched
+source: >-
+  https://scrapingant.com/#pricing, https://docs.scrapingant.com/credits-cost,
+  https://docs.scrapingant.com/errors, https://docs.scrapingant.com/request-response-format,
+  https://api.scrapingant.com/openapi.json, plus a live unauthenticated probe of
+  https://api.scrapingant.com/v2/general on 2026-08-29
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
+modified: '2026-08-29'
 tags:
   - Data Extraction
   - Proxies
   - Scraping
   - Rate Limiting
   - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the ScrapingAnt API surface. Captures per-tier
-  quotas, burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to
-  be replaced with published provider limits.
+description: >-
+  ScrapingAnt's published throttling and quota surface. This file REPLACES a 2026-05-04 scaffold
+  that asserted per-minute request ceilings (10/100/1000 rpm) and X-RateLimit-* response headers
+  that ScrapingAnt does not publish and does not return. The real model is different in kind:
+  ScrapingAnt does not meter requests per unit time at all. It meters a MONTHLY CREDIT POOL,
+  markets "unlimited parallel requests / no concurrency cap on any plan", and signals cost per
+  request with a proprietary Ant-credits-cost response header. The only throttle-shaped control
+  documented is HTTP 409 for concurrent-request limits on the free plan.
+limit_count: 7
+model: credit-quota
+time_windowed_rate_limit: false
+time_windowed_rate_limit_note: >-
+  No requests-per-second/minute/hour limit is published anywhere on scrapingant.com or
+  docs.scrapingant.com. The provider explicitly markets the opposite: "No concurrency cap on
+  any plan" and "fire 1,000 requests in parallel without queues, throttling, or worker
+  management".
 headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
+  cost: Ant-credits-cost
+  limit: null
+  remaining: null
+  reset: null
+  retryAfter: null
+  policy: null
+  note: >-
+    ScrapingAnt returns NO standard rate-limit signalling. There is no RateLimit-Limit /
+    RateLimit-Remaining / RateLimit-Reset (RFC 9331 style), no X-RateLimit-* family, and no
+    Retry-After. The single quota-related header is the proprietary Ant-credits-cost, which
+    reports what the CALL JUST COST, not what remains. An agent cannot learn its remaining
+    budget from a response header - it has to poll GET /v2/usage, which returns
+    plan_total_credits and remained_credits.
+  header_verification:
+    method: unauthenticated GET https://api.scrapingant.com/v2/general?url=...
+    observed_status: 422
+    observed_headers: [content-type, date, server, vary, content-length]
+    note: >-
+      An unauthenticated call returns 422 with no rate-limit or credit headers at all; the
+      Ant-credits-cost header is documented on successful (authenticated) responses and was not
+      independently observed in this pass, since observing it requires a paid credit spend.
 responseCodes:
-  throttled: 429
-  quotaExceeded: 429
-  serviceUnavailable: 503
+  concurrencyExceeded: 409
+  quotaExceeded: 403
+  antibotDetected: 423
+  missingOrInvalidToken: 422
+  serviceError: 500
+  note: >-
+    ScrapingAnt does NOT use 429. Quota exhaustion and a bad token share HTTP 403 ("The API
+    token is wrong or you have exceeded the API credits limit"), which means a client cannot
+    distinguish "out of money" from "wrong key" by status code alone - it has to read the
+    `detail` string or call /v2/usage.
 limits:
-  - tier: free
-    name: Free Tier Default
+  - name: Concurrent requests (free plan)
     scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - ScrapingAnt
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
+    metric: concurrent_requests
+    limit: null
+    window: instantaneous
+    status_on_exhaustion: 409
+    documented: true
+    source: https://docs.scrapingant.com/errors
+    note: >-
+      HTTP 409 is documented as "Concurrent requests limit exceeded. Please, try again or
+      upgrade to the paid plan". The NUMERIC ceiling is never published - `limit: null` is an
+      honest gap, not an omission. Paid plans are marketed as having no concurrency cap.
+  - name: Free plan monthly credits
+    tier: free
+    scope: account
+    metric: api_credits
+    limit: 10000
     timeFrame: month
-    applies:
-      - ScrapingAnt
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - ScrapingAnt
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
+    status_on_exhaustion: 403
+    source: https://scrapingant.com/#pricing
+  - name: Enthusiast monthly credits
+    tier: enthusiast
+    scope: account
+    metric: api_credits
     limit: 100000
     timeFrame: month
-    applies:
-      - ScrapingAnt
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - ScrapingAnt
+    status_on_exhaustion: 403
+    source: https://scrapingant.com/#pricing
+  - name: Startup monthly credits
+    tier: startup
+    scope: account
+    metric: api_credits
+    limit: 500000
+    timeFrame: month
+    status_on_exhaustion: 403
+    source: https://scrapingant.com/#pricing
+  - name: Business monthly credits
+    tier: business
+    scope: account
+    metric: api_credits
+    limit: 3000000
+    timeFrame: month
+    status_on_exhaustion: 403
+    source: https://scrapingant.com/#pricing
+  - name: Business Pro monthly credits
+    tier: business-pro
+    scope: account
+    metric: api_credits
+    limit: 8000000
+    timeFrame: month
+    status_on_exhaustion: 403
+    source: https://scrapingant.com/#pricing
+  - name: Request execution timeout
+    scope: request
+    metric: seconds
+    limit: 60
+    minimum: 5
+    default: 60
+    parameter: timeout
+    source: https://docs.scrapingant.com/request-response-format
+    note: >-
+      Caller-set per-request duration ceiling, 5-60 seconds. This is the only bound a client
+      can impose on ScrapingAnt from the request side. It is documented on the REST surface but
+      is absent from both the published OpenAPI and the MCP tool inputSchemas.
+quota_introspection:
+  operation: GET /v2/usage
+  operationId: scrapingant_usage_v2_usage_get
+  returns: [plan_name, start_date, end_date, plan_total_credits, remained_credits]
+  cost: not stated
+  note: >-
+    The correct way to track budget against ScrapingAnt. Not exposed as an MCP tool, so an
+    agent using the MCP server has no in-band way to see its remaining credits.
 policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
+  - name: Failed requests are free
+    description: >-
+      Failed requests cost 0 credits (stated on scrapingant.com/#pricing and the MCP landing
+      page). Only successful scrapes draw down the pool.
+  - name: No credit rollover
+    description: >-
+      Unused credits do not carry into the next subscription period
+      (docs.scrapingant.com/credits-cost).
+  - name: Mid-cycle restart
+    description: >-
+      A plan can be restarted immediately once its credits are exhausted rather than waiting
+      for the billing cycle to roll; credits refresh on payment.
+  - name: Variable request cost
+    description: >-
+      A single request costs between 1 and 125 credits depending on browser rendering and proxy
+      type, so a per-request quota cannot be inferred from a credit total without knowing the
+      option mix. See plans/scrapingant-plans-pricing.yml credit_costs.
+gaps:
+  - >-
+    No standard rate-limit response headers. An agent has no runtime backpressure signal and
+    must poll /v2/usage or parse the proprietary Ant-credits-cost header.
+  - >-
+    No Retry-After on 409 (concurrency) or 423 (anti-bot), so retry timing is left entirely to
+    client guesswork on the two statuses most likely to need a backoff.
+  - >-
+    The free-plan concurrency ceiling that triggers 409 is not published as a number.
+  - >-
+    403 conflates an invalid API key with an exhausted credit balance.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

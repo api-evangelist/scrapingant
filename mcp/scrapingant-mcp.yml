@@ -1,0 +1,160 @@
+generated: '2026-08-29'
+method: probed
+source: >-
+  https://api.scrapingant.com/mcp/ (anonymous JSON-RPC tools/list, HTTP 200) and
+  https://docs.scrapingant.com/mcp-server
+name: ScrapingAnt MCP Server
+provider: ScrapingAnt
+providerId: scrapingant
+description: >-
+  ScrapingAnt operates a first-party hosted MCP server that gives an AI agent live web access
+  through the same headless-Chrome cluster and rotating proxy pool that backs the /v2/general
+  REST endpoint. Three tools return the same fetched page in three formats - raw HTML, cleaned
+  Markdown, and plain text - so the agent can pick the representation that fits the task.
+  Authentication is the same x-api-key the REST API uses, sent as an HTTP header, and MCP calls
+  draw down the same API-credit pool.
+status: live
+deployment:
+  mode: remote
+  endpoint: https://api.scrapingant.com/mcp/
+  install: null
+  package: null
+  auth: api-key
+  verified: probed
+transport:
+  protocol: streamable-http
+  declared_as: streamableHttp
+  note: >-
+    https://api.scrapingant.com/mcp (no trailing slash) answers HTTP 307 and redirects to
+    /mcp/. The provider's own published configuration snippets use the un-slashed form for
+    Claude Desktop, Cursor, Claude Code and Cline, and the slashed form for VS Code; both
+    resolve. tools/list was probed successfully against the slashed URL.
+authentication:
+  scheme: api-key
+  header: x-api-key
+  obtained_from: https://app.scrapingant.com/signup
+  anonymous_introspection: true
+  note: >-
+    tools/list returns the complete tool set with full inputSchema WITHOUT credentials - the
+    schema surface is open even though tool invocation requires a key. This is the best case
+    for agent discovery: a client can plan against the real schemas before a key exists.
+clients_documented:
+- Claude Desktop
+- Claude Code (CLI)
+- Cursor
+- Windsurf
+- Cline
+- VS Code / GitHub Copilot
+install_examples:
+- client: Claude Code
+  command: >-
+    claude mcp add scrapingant --transport http https://api.scrapingant.com/mcp
+    -H "x-api-key: <YOUR-API-KEY>"
+  source: https://docs.scrapingant.com/mcp-server
+- client: Cursor / Windsurf / Claude Desktop / Cline
+  config: |
+    {
+      "mcpServers": {
+        "scrapingant": {
+          "url": "https://api.scrapingant.com/mcp",
+          "transport": "streamableHttp",
+          "headers": { "x-api-key": "<YOUR-API-KEY>" }
+        }
+      }
+    }
+  source: https://docs.scrapingant.com/mcp-server
+tools:
+- name: get_web_page_html
+  description: Fetch (scrape) a URL using ScrapingAnt and return the web page content as HTML.
+  parameters:
+  - name: url
+    type: string
+    required: true
+    description: The URL of the page to extract (scrape).
+  - name: browser
+    type: boolean
+    required: false
+    default: true
+    description: Whether to use browser rendering.
+  - name: proxy_type
+    type: string
+    required: false
+    default: datacenter
+    description: >-
+      Type of proxy to use. Use 'residential' when facing anti-bot detection.
+  - name: proxy_country
+    type: string
+    required: false
+    default: null
+    description: >-
+      ISO-3166 country code. Published set: ae, au, br, ca, cn, cz, de, es, fr, gb, hk, id,
+      il, in, it, jp, kr, my, nl, ph, pl, ru, sa, sg, th, us, vn.
+  output: 'string (wrapped by FastMCP as {"result": <string>})'
+- name: get_web_page_markdown
+  description: Fetch (scrape) a URL using ScrapingAnt and return the web page content as Markdown.
+  parameters:
+  - name: url
+    type: string
+    required: true
+  - name: browser
+    type: boolean
+    required: false
+    default: true
+  - name: proxy_type
+    type: string
+    required: false
+    default: datacenter
+  - name: proxy_country
+    type: string
+    required: false
+    default: null
+  output: 'string (wrapped by FastMCP as {"result": <string>})'
+- name: get_web_page_text
+  description: Fetch (scrape) a URL using ScrapingAnt and return the web page content as plain text.
+  parameters:
+  - name: url
+    type: string
+    required: true
+  - name: browser
+    type: boolean
+    required: false
+    default: true
+  - name: proxy_type
+    type: string
+    required: false
+    default: datacenter
+  - name: proxy_country
+    type: string
+    required: false
+    default: null
+  output: 'string (wrapped by FastMCP as {"result": <string>})'
+capabilities:
+  tools: true
+  resources: false
+  prompts: false
+  note: >-
+    Only tools/list was probed. resources/list and prompts/list were not exercised, so the
+    false values above are "not observed", not "confirmed absent".
+raw_manifest: mcp/scrapingant-mcp-tools-list.json
+implementation:
+  framework: FastMCP
+  evidence: >-
+    Every tool carries an outputSchema titled _WrappedResult with the
+    x-fastmcp-wrap-result extension and a _meta._fastmcp block.
+billing:
+  model: api-credits
+  note: >-
+    MCP requests consume the same API credits as direct REST calls; the credit cost table at
+    https://docs.scrapingant.com/credits-cost applies. Failed requests cost 0 credits.
+x-evidence:
+  fetched: '2026-08-29'
+  method: POST
+  url: https://api.scrapingant.com/mcp/
+  body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  http_status: 200
+  content_type: text/event-stream
+  tools_returned: 3
+  credentials_sent: none
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

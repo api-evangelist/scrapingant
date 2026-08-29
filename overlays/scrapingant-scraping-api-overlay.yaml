@@ -1,0 +1,143 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the ScrapingAnt Scraping API
+  version: 1.0.0
+x-provenance:
+  generated: '2026-08-29'
+  method: generated
+  source: >-
+    Enhancements derived from https://docs.scrapingant.com/request-response-format,
+    https://docs.scrapingant.com/errors and https://docs.scrapingant.com/api-basics, applied
+    over openapi/_original/scrapingant-openapi.json (harvested verbatim 2026-08-29).
+  extends: openapi/_original/scrapingant-openapi.json
+  refined_output: openapi/scrapingant-scraping-api-openapi.yml
+  note: >-
+    The original document is never mutated. Every action below records a divergence between the
+    contract ScrapingAnt publishes and the API ScrapingAnt documents and operates. Four of them
+    are defects a code generator would trip over.
+x-divergences:
+  - id: nonunique-operationids
+    severity: high
+    detail: >-
+      The published spec assigns the SAME operationId
+      (scrapingant_general_request_v2_general_post) to all five HTTP methods on /v2/general.
+      OpenAPI requires operationId to be unique across the document. Most generators either
+      fail or silently emit one method. The refined document assigns method-suffixed ids.
+  - id: no-securityschemes
+    severity: high
+    detail: >-
+      components.securitySchemes is empty and no security requirement is declared, yet every
+      operation requires x-api-key. A generator reading the spec produces an unauthenticated
+      client.
+  - id: credential-in-query
+    severity: high
+    detail: >-
+      x-api-key is declared as a required QUERY parameter. The docs and the provider's own code
+      samples also accept it as a request header, which is the safer transport, but the contract
+      does not describe that option.
+  - id: missing-endpoints
+    severity: high
+    detail: >-
+      /v2/markdown, /v2/extract and /v2/extended are documented, live (all return 422 "API
+      token is missing" unauthenticated) and absent from the spec. The contract describes 2 of
+      5 endpoints.
+  - id: no-tags
+    severity: medium
+    detail: The document declares no tags, so every operation is untagged and ungrouped.
+  - id: undeclared-timeout
+    severity: medium
+    detail: >-
+      The `timeout` parameter (5-60s, default 60) is documented at
+      docs.scrapingant.com/request-response-format and is missing from every operation.
+  - id: response-media-type-mismatch
+    severity: medium
+    detail: >-
+      The 200 response of /v2/general is declared as application/json while the endpoint
+      returns text/html page content, as the response description itself states.
+actions:
+  - target: $.info
+    description: >-
+      Record that this contract covers only part of the documented ScrapingAnt API surface.
+    update:
+      x-api-evangelist-coverage: >-
+        This document specifies /v2/general and /v2/usage. ScrapingAnt also operates and
+        documents /v2/markdown (HTML-to-Markdown), /v2/extract (AI structured extraction) and
+        /v2/extended (JSON envelope with cookies, headers, XHRs and iframes). Those three are
+        not described by any machine-readable contract.
+      x-api-evangelist-mcp: https://api.scrapingant.com/mcp/
+  - target: $
+    description: Declare the API-key security scheme the API enforces but the contract omits.
+    update:
+      security:
+        - ApiKeyAuth: []
+      components:
+        securitySchemes:
+          ApiKeyAuth:
+            type: apiKey
+            in: query
+            name: x-api-key
+            description: >-
+              ScrapingAnt API key. Declared in-query to match the published contract; the
+              provider documents that the same value is also accepted as an x-api-key request
+              header, which should be preferred because query strings are logged.
+  - target: $
+    description: Declare tags so operations can be grouped.
+    update:
+      tags:
+        - name: Scraping
+          description: Fetch and render a target URL through the ScrapingAnt browser and proxy cluster.
+        - name: Usage
+          description: Account credit metering.
+  - target: $.paths['/v2/general'].get
+    description: Add the documented timeout parameter and correct the response media type.
+    update:
+      tags: [Scraping]
+      parameters:
+        - name: timeout
+          in: query
+          required: false
+          description: >-
+            Maximum time in seconds the request may run before it stops. Range 5-60, default
+            60. Documented at https://docs.scrapingant.com/request-response-format.
+          schema:
+            type: integer
+            minimum: 5
+            maximum: 60
+            default: 60
+      responses:
+        '200':
+          content:
+            text/html:
+              schema:
+                type: string
+                description: HTML body of the rendered target page.
+  - target: $.paths['/v2/general'].post
+    description: >-
+      Flag that a non-GET method is proxied through to the TARGET site, which makes this
+      operation an unguarded third-party write.
+    update:
+      tags: [Scraping]
+      x-agentic-consequence: external-write
+      x-api-evangelist-note: >-
+        POST/PUT/PATCH/DELETE against /v2/general causes ScrapingAnt to issue that method
+        against the caller-supplied target URL. There is no idempotency key, no dry-run and no
+        confirmation step. Treat as a write with no reversal path.
+  - target: $.paths['/v2/usage'].get
+    description: Tag the metering operation and record its agent relevance.
+    update:
+      tags: [Usage]
+      x-api-evangelist-note: >-
+        The only way to observe remaining credits. Not exposed as an MCP tool, so an agent on
+        the MCP server is blind to its own budget.
+  - target: $.paths['/v2/general'].get.responses['423']
+    description: Record that no Retry-After accompanies the anti-bot status.
+    update:
+      x-retry: >-
+        Retryable, but no Retry-After header is returned. Change proxy_type to residential or
+        set proxy_country before retrying.
+  - target: $.paths['/v2/general'].get.responses['403']
+    description: Record the ambiguity between a bad key and an exhausted balance.
+    update:
+      x-disambiguation: >-
+        403 covers BOTH an invalid API token and an exhausted credit balance. Call
+        GET /v2/usage and read remained_credits to tell them apart.

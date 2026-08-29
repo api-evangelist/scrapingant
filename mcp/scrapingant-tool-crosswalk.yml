@@ -1,0 +1,137 @@
+generated: '2026-08-29'
+method: derived
+source: >-
+  mcp/scrapingant-mcp-tools-list.json (probed 2026-08-29),
+  openapi/_original/scrapingant-openapi.json (harvested 2026-08-29),
+  https://docs.scrapingant.com/llm-markdown, https://docs.scrapingant.com/json-response,
+  https://docs.scrapingant.com/ai-data-extraction/ai-extractor
+provider: ScrapingAnt
+providerId: scrapingant
+description: >-
+  Binds each ScrapingAnt MCP tool to the REST operation(s) that back it. The two surfaces are
+  deliberately asymmetric: the MCP server exposes three output FORMATS of one underlying fetch,
+  while the REST API exposes one operation per format-carrying PATH plus a usage/metering
+  operation the MCP server does not surface at all. The published OpenAPI is also narrower than
+  the documented REST surface - /v2/markdown, /v2/extract and /v2/extended are documented and
+  live but absent from api.scrapingant.com/openapi.json, which is why two crosswalk rows bind
+  to documented-but-unspecified operations and carry confidence: medium.
+surfaces:
+  openapi:
+    file: openapi/_original/scrapingant-openapi.json
+    url: https://api.scrapingant.com/openapi.json
+    gated: false
+    operations_declared: 6
+    note: >-
+      Six operation objects across two paths, but the document reuses one operationId
+      (scrapingant_general_request_v2_general_post) across all five methods of /v2/general.
+  mcp:
+    url: https://api.scrapingant.com/mcp/
+    gated: false
+    note: >-
+      tools/list answers anonymously with full inputSchema. Tool INVOCATION requires x-api-key.
+    tools_declared: 3
+  graphql:
+    present: false
+crosswalk:
+- tool: get_web_page_html
+  category: fetch
+  rest:
+  - scrapingant_general_request_v2_general_get
+  binding: direct
+  confidence: high
+  note: >-
+    Both return the raw HTML body of the rendered page. The tool's url/browser/proxy_type/
+    proxy_country parameters are exactly four of the ten query parameters on GET /v2/general
+    and carry identical names, types and defaults.
+  inherits_input_schema_from: GET /v2/general
+- tool: get_web_page_markdown
+  category: fetch-transform
+  rest:
+  - GET /v2/markdown
+  binding: direct
+  confidence: medium
+  note: >-
+    docs.scrapingant.com/llm-markdown documents https://api.scrapingant.com/v2/markdown taking
+    the same request structure as /v2/general and returning {"url","markdown"}. The endpoint is
+    live (422 "API token is missing" when called without a key, same as the specified paths)
+    but is NOT present in the published OpenAPI, so no operationId exists to bind to.
+    Confidence is medium because the mapping is read from the docs, not the contract.
+- tool: get_web_page_text
+  category: fetch-transform
+  rest: []
+  binding: none
+  confidence: medium
+  note: >-
+    No REST path returns plain text as its primary representation. The closest REST equivalent
+    is the `text` property of the JSON body returned by the documented /v2/extended endpoint
+    (docs.scrapingant.com/json-response), so a REST caller reaches the same data as a field
+    rather than as a response body. Treated as a projection, not a binding.
+mcp_only:
+- tool: get_web_page_text
+  reason: >-
+    Plain-text extraction is exposed as a first-class tool on MCP but only as the `text` field
+    inside the /v2/extended JSON envelope on REST. An agent gets it in one call; a REST client
+    must request the extended envelope and read a field.
+rest_only:
+- operation: scrapingant_usage_v2_usage_get
+  path: GET /v2/usage
+  reason: >-
+    Credit-balance metering. No MCP tool reports remaining credits, so an agent driving the MCP
+    server cannot see how much of the plan quota it has consumed or how close it is to a 403.
+    This is the single most consequential gap in the crosswalk for autonomous use.
+- operation: POST /v2/general
+  reason: >-
+    /v2/general accepts POST, PUT, PATCH and DELETE and proxies that method through to the
+    TARGET site. The MCP tools are fetch-only - no tool lets an agent issue a non-GET request
+    against a target URL.
+- operation: PUT /v2/general
+  reason: See POST /v2/general - method pass-through is REST-only.
+- operation: PATCH /v2/general
+  reason: See POST /v2/general - method pass-through is REST-only.
+- operation: DELETE /v2/general
+  reason: See POST /v2/general - method pass-through is REST-only.
+- operation: GET /v2/extract
+  reason: >-
+    AI structured-data extraction (extract_properties free-text schema -> JSON). Documented at
+    docs.scrapingant.com/ai-data-extraction/ai-extractor, live, absent from the published
+    OpenAPI, and NOT exposed as an MCP tool. An agent that wants typed JSON rather than page
+    content has to fall back to the REST API.
+- operation: GET /v2/extended
+  reason: >-
+    Extended JSON envelope (html, text, cookies, status_code, headers, xhrs, iframes).
+    Documented, live, absent from the published OpenAPI, no MCP tool.
+parameter_divergence:
+- parameter: timeout
+  rest: documented (5-60s, default 60)
+  mcp: absent
+  note: >-
+    An agent cannot bound how long a ScrapingAnt MCP call may run. Documented on the REST
+    surface at docs.scrapingant.com/request-response-format; not in the tool inputSchema.
+- parameter: return_page_source
+  rest: present
+  mcp: absent
+  note: The cheap no-JS-rendering path (2 credits vs 10) is unreachable from MCP.
+- parameter: js_snippet
+  rest: present
+  mcp: absent
+- parameter: cookies
+  rest: present
+  mcp: absent
+- parameter: wait_for_selector
+  rest: present
+  mcp: absent
+- parameter: block_resource
+  rest: present
+  mcp: absent
+coverage:
+  mcp_tools: 3
+  mcp_tools_bound_to_rest: 2
+  mcp_only: 1
+  rest_operations_specified: 6
+  rest_operations_documented_but_unspecified: 3
+  rest_only: 8
+  bound_high_confidence: 1
+  bound_medium_confidence: 1
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

@@ -1,0 +1,156 @@
+generated: '2026-08-29'
+method: derived
+source: >-
+  openapi/_original/scrapingant-openapi.json (components.schemas + response bodies),
+  https://docs.scrapingant.com/json-response, https://docs.scrapingant.com/llm-markdown,
+  https://docs.scrapingant.com/ai-data-extraction/ai-extractor
+provider: ScrapingAnt
+providerId: scrapingant
+description: >-
+  Entity model for the ScrapingAnt API. ScrapingAnt has no persistent resource graph - it
+  stores nothing addressable, issues no identifiers, and exposes no CRUD. What exists is a set
+  of RESPONSE SHAPES for one transient entity (a fetched page, rendered four different ways)
+  plus one account-scoped metering record. There are therefore no id-reference relationships to
+  derive; recording that is the finding, not a shortfall in the derivation.
+graph_shape: none
+persistent_resources: false
+identifiers:
+  scheme: none
+  note: >-
+    No object ids, no prefixes, no URNs. The only identifier in the whole surface is the
+    caller's API key, and the only addressable thing is the caller-supplied target `url`.
+entities:
+  - name: ScrapeResult
+    source: openapi (200 response of /v2/general) + docs
+    persisted: false
+    description: >-
+      The rendered content of one target page. Returned as a raw HTML body, not a JSON object,
+      by /v2/general. Not modelled in components.schemas.
+    fields:
+      - name: '<body>'
+        type: string (text/html)
+        description: The full HTML of the rendered target page.
+    variants:
+      - endpoint: /v2/general
+        representation: raw HTML body
+      - endpoint: /v2/markdown
+        representation: 'JSON: {url, markdown}'
+      - endpoint: /v2/extended
+        representation: 'JSON: ExtendedScrapeResult (below)'
+      - endpoint: /v2/extract
+        representation: >-
+          AI-generated JSON whose keys are derived at runtime from the caller's free-text
+          extract_properties parameter. The response SCHEMA IS CALLER-DEFINED and therefore
+          cannot be specified - the strongest reason this endpoint is absent from the OpenAPI.
+  - name: ExtendedScrapeResult
+    source: https://docs.scrapingant.com/json-response
+    persisted: false
+    in_openapi: false
+    description: >-
+      Richer JSON envelope for the same fetch, exposing transport-level detail the plain HTML
+      body discards.
+    fields:
+      - name: html
+        type: string
+        description: Content from the scraped web page.
+      - name: text
+        type: string
+        description: Text content from the scraped web page.
+      - name: cookies
+        type: string
+        description: Response cookies from the scraped page, semicolon-delimited.
+      - name: status_code
+        type: integer
+        description: Status code returned by the TARGET page (not by ScrapingAnt).
+      - name: headers
+        type: array
+        items: '{name, value}'
+      - name: xhrs
+        type: array
+        items: '{url, status, method, headers[], request_body, body}'
+        note: Browser-rendered requests only.
+      - name: iframes
+        type: array
+        items: '{src, html}'
+        note: Browser-rendered requests only.
+  - name: ApiGeneralUsageResponse
+    source: openapi components.schemas.ApiGeneralUsageResponse
+    persisted: true
+    scope: account
+    description: >-
+      The only account-scoped record in the API - the caller's current billing-period credit
+      state. This is the entity an autonomous agent needs to read to stay solvent.
+    fields:
+      - name: plan_name
+        type: string
+        required: true
+      - name: start_date
+        type: string (date-time)
+        required: true
+        description: Start of the current subscription period.
+      - name: end_date
+        type: string (date-time)
+        required: true
+        description: End of the current subscription period.
+      - name: plan_total_credits
+        type: integer
+        required: true
+      - name: remained_credits
+        type: integer
+        required: true
+  - name: HTTPValidationError
+    source: openapi components.schemas.HTTPValidationError
+    persisted: false
+    kind: error
+    fields:
+      - name: detail
+        type: array of ValidationError
+    note: >-
+      The live API also returns `detail` as a plain STRING for a missing token, so this schema
+      describes only one of two real shapes. See errors/scrapingant-problem-types.yml.
+  - name: ValidationError
+    source: openapi components.schemas.ValidationError
+    persisted: false
+    kind: error
+    fields:
+      - name: loc
+        type: array of (string | integer)
+        required: true
+      - name: msg
+        type: string
+        required: true
+      - name: type
+        type: string
+        required: true
+relationships:
+  - from: HTTPValidationError
+    to: ValidationError
+    kind: has_many
+    via: detail
+    source: '$ref in openapi components'
+  - from: ScrapeResult
+    to: ExtendedScrapeResult
+    kind: projection
+    via: endpoint selection (/v2/general vs /v2/extended)
+    note: >-
+      Not a foreign-key relationship - the same fetch rendered at different fidelity. Recorded
+      because it is the only structural link an integrator has to reason about.
+schema_reuse:
+  components_schemas: 3
+  reused_across_operations: 2
+  note: >-
+    HTTPValidationError and ValidationError are FastAPI boilerplate reused by both paths. The
+    two domain-meaningful payloads - the HTML scrape body and the extended JSON envelope - are
+    NOT in components.schemas at all, so the spec's schema reuse metric flatters a contract
+    whose actual domain objects are unmodelled.
+gaps:
+  - >-
+    The 200 response of /v2/general is typed only as a description string; no schema, no media
+    type beyond application/json in the spec while the API actually returns text/html.
+  - ExtendedScrapeResult is documented in prose and absent from any machine-readable contract.
+  - >-
+    The /v2/extract response is caller-shaped by design and has no schema; a consumer cannot
+    validate it without knowing the extract_properties string that produced it.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

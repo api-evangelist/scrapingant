@@ -1,0 +1,114 @@
+generated: '2026-08-29'
+method: searched
+source: >-
+  https://docs.scrapingant.com/, https://docs.scrapingant.com/v1/,
+  https://docs.scrapingant.com/api-basics, https://docs.scrapingant.com/blog,
+  https://scrapingant.com/legal/terms-of-use, https://api.scrapingant.com/openapi.json,
+  probe of https://status.scrapingant.com/ 2026-08-29
+provider: ScrapingAnt
+providerId: scrapingant
+description: >-
+  Operational lifecycle posture for the ScrapingAnt API. The finding here is a set of honest
+  absences: ScrapingAnt runs two documented API generations side by side but publishes no
+  versioning policy, no deprecation policy, no dated changelog, no SLA, and no status page.
+  Everything below that says "false" was probed or read for, not assumed.
+versioning:
+  scheme: uri-path
+  current: v2
+  current_base: https://api.scrapingant.com/v2
+  generations:
+    - version: v2
+      status: current
+      docs: https://docs.scrapingant.com/
+      spec: https://api.scrapingant.com/openapi.json
+    - version: v1
+      status: superseded-but-documented
+      docs: https://docs.scrapingant.com/v1/
+      note: >-
+        A complete v1 documentation set (api-basics, proxy-settings, errors, js-client,
+        python-client, and more) is still published and reachable through the docs version
+        switcher. No sunset date, no migration deadline, and no deprecation banner is attached
+        to it, so a reader cannot tell whether v1 is supported, frozen, or already dark.
+  policy_published: false
+  policy_note: >-
+    No document states how versions are introduced, how long a generation is supported, or what
+    constitutes a breaking change.
+deprecation:
+  policy_published: false
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  note: >-
+    No RFC 8594 Sunset or Deprecation header is documented, and the published OpenAPI marks no
+    operation `deprecated: true`. The one live deprecation signal in the estate - v1 - is
+    communicated only by a docs version selector.
+status_page:
+  present: false
+  probed:
+    - url: https://status.scrapingant.com/
+      status: '<no response>'
+      note: >-
+        DNS/connection failure - the host did not answer. Recorded as unreachable, not as a
+        200 or a 404.
+  note: >-
+    No status page, uptime history, or incident feed is linked from scrapingant.com,
+    docs.scrapingant.com, or the terms of use. For an API whose entire value proposition is
+    availability against hostile targets, this is the most consequential operational gap in
+    the profile.
+changelog:
+  present: false
+  probed:
+    - url: https://docs.scrapingant.com/blog
+      status: 200
+      note: Docusaurus blog route renders with no posts.
+    - url: https://scrapingant.com/blog/
+      status: 200
+      note: >-
+        Content-marketing blog (scraping tutorials, language guides), not a product changelog.
+        Its RSS feed is already wired in apis.yml as type Blog.
+  note: >-
+    No dated release notes exist. The only way to learn that /v2/markdown, /v2/extract,
+    /v2/extended or the MCP server shipped is to notice a new page in the docs sidebar - and
+    three of those four are still absent from the published OpenAPI entirely.
+sla:
+  published: false
+  uptime_commitment: null
+  support_response_commitment: >-
+    Marketing copy states "a real human replies within a few hours"; not a contractual target.
+  note: >-
+    scrapingant.com/legal/terms-of-use is published (HTTP 200) but no availability or
+    remedy-bearing SLA is offered on any public page or plan tier.
+support:
+  channels:
+    - type: email-by-tier
+      detail: >-
+        Email (Enthusiast), priority email (Startup, Business, Business Pro), priority +
+        dedicated (Custom).
+      source: https://scrapingant.com/#pricing
+    - type: contact-form
+      url: https://scrapingant.com/#contact
+  named_contact: Oleg Kulyk, Founder
+maturity:
+  api_generation: v2
+  spec_published: true
+  spec_completeness: partial
+  spec_completeness_note: >-
+    api.scrapingant.com/openapi.json describes 2 of the 5 documented and live endpoints.
+    /v2/markdown, /v2/extract and /v2/extended are documented, answer live, and are absent
+    from the contract.
+recommendations:
+  - Publish a status page; it is the single largest operational gap.
+  - >-
+    Publish a dated changelog. Four significant capabilities (Markdown, AI extract, extended
+    JSON, MCP) shipped with no release record.
+  - >-
+    Add /v2/markdown, /v2/extract and /v2/extended to the published OpenAPI so the contract
+    matches the product.
+  - >-
+    State a v1 sunset position, or mark the v1 docs as frozen. Two live generations with no
+    policy is a support liability.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

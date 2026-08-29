@@ -1,0 +1,39 @@
+generated: '2026-08-29'
+method: generated
+source: >-
+  openapi/_original/scrapingant-openapi.json, mcp/scrapingant-mcp-tools-list.json,
+  conventions/scrapingant-conventions.yml, errors/scrapingant-problem-types.yml,
+  rate-limits/scrapingant-rate-limits.yml, plans/scrapingant-plans-pricing.yml
+provider: ScrapingAnt
+providerId: scrapingant
+description: >-
+  Packaged Agent Skills for the ScrapingAnt API. Each is grounded in operationIds and tool names
+  verified against the provider's live published contract and live MCP tools/list on 2026-08-29 -
+  no operation, parameter or credit figure below is invented.
+skills:
+  - name: scrapingant-scrape-a-page
+    file: skills/scrapingant-scrape-a-page.md
+    summary: >-
+      Fetch a rendered page at the cheapest option set that works, and escalate correctly
+      through the 423 anti-bot ladder.
+    operations: [scrapingant_general_request_v2_general_get]
+  - name: scrapingant-page-to-markdown-for-llm
+    file: skills/scrapingant-page-to-markdown-for-llm.md
+    summary: >-
+      Turn a URL into token-efficient Markdown for a context window or RAG index, via REST or
+      the MCP tool, and choose between them knowingly.
+    operations: ['GET /v2/markdown']
+    mcp_tools: [get_web_page_markdown]
+  - name: scrapingant-track-credit-budget
+    file: skills/scrapingant-track-credit-budget.md
+    summary: >-
+      Stay solvent on a metered API with no rate-limit headers and an ambiguous 403 - read
+      /v2/usage, estimate batch cost from the credit table, and re-check mid-run.
+    operations: [scrapingant_usage_v2_usage_get]
+notes:
+  - >-
+    No skill is written for /v2/extract or /v2/extended. Both are live and documented but absent
+    from any machine-readable contract, so there is no operationId to ground a skill in.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

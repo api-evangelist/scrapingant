@@ -1,0 +1,152 @@
+generated: '2026-08-29'
+method: derived
+source: >-
+  openapi/_original/scrapingant-openapi.json, mcp/scrapingant-mcp-tools-list.json,
+  well-known/scrapingant-well-known.yml, errors/scrapingant-problem-types.yml,
+  https://docs.scrapingant.com/request-response-format, https://docs.scrapingant.com/errors,
+  https://scrapingant.com/legal/privacy-policy
+provider: ScrapingAnt
+providerId: scrapingant
+description: >-
+  Cross-cutting and industry standards asserted for ScrapingAnt, each with the evidence that
+  supports or refutes it. Web scraping / web-data infrastructure has no ratified domain
+  standard - there is no scraping equivalent of FHIR, SCIM, OpenRTB or ISO 20022 - so
+  domain_standard is recorded as not-applicable rather than as a failure. The one specification
+  ScrapingAnt genuinely implements beyond OpenAPI is the Model Context Protocol, and it
+  implements it well: a live, anonymously-introspectable streamable-HTTP server.
+conformance:
+  - id: openapi
+    name: OpenAPI Specification
+    version: 3.1.0
+    conforms: true
+    evidence: >-
+      https://api.scrapingant.com/openapi.json returns a parseable OpenAPI 3.1.0 document with
+      info, servers and paths (2 paths, 6 operations). Harvested verbatim to
+      openapi/_original/scrapingant-openapi.json on 2026-08-29.
+    quality_note: >-
+      Conforms structurally but is incomplete against the product: three documented, live
+      endpoints (/v2/markdown, /v2/extract, /v2/extended) are missing, no securitySchemes are
+      declared despite the API requiring a key, no tags are declared, and one operationId is
+      reused across five HTTP methods on /v2/general - which makes operationIds non-unique and
+      breaks most code generators.
+  - id: mcp
+    name: Model Context Protocol
+    version: streamable-http transport
+    conforms: true
+    evidence: >-
+      POST https://api.scrapingant.com/mcp/ with {"jsonrpc":"2.0","id":1,"method":"tools/list"}
+      returned HTTP 200 text/event-stream carrying a valid JSON-RPC 2.0 result with three tools,
+      each with a complete inputSchema and outputSchema. Probed anonymously 2026-08-29; saved to
+      mcp/scrapingant-mcp-tools-list.json. Provider documents the server at
+      https://docs.scrapingant.com/mcp-server.
+  - id: jsonrpc2
+    name: JSON-RPC 2.0
+    conforms: true
+    evidence: MCP transport returns well-formed jsonrpc/id/result envelopes.
+  - id: rfc9457
+    name: RFC 9457 Problem Details for HTTP APIs
+    conforms: false
+    evidence: >-
+      Errors return application/json with a bare {"detail": "..."} envelope. No
+      application/problem+json media type and no type/title/status/detail/instance members.
+      See errors/scrapingant-problem-types.yml.
+  - id: rfc9116
+    name: RFC 9116 security.txt
+    conforms: false
+    evidence: >-
+      /.well-known/security.txt returned 404 on scrapingant.com, api.scrapingant.com and
+      docs.scrapingant.com (well-known/scrapingant-well-known.yml).
+  - id: rfc9727
+    name: RFC 9727 API Catalog
+    conforms: false
+    evidence: /.well-known/api-catalog returned 404 on all three hosts.
+  - id: rfc8594
+    name: RFC 8594 Sunset HTTP Header
+    conforms: false
+    evidence: >-
+      No Sunset or Deprecation header documented or observed; v1 is superseded with no sunset
+      signal. See lifecycle/scrapingant-lifecycle.yml.
+  - id: rfc9331
+    name: RateLimit header fields for HTTP
+    conforms: false
+    evidence: >-
+      No RateLimit-* or X-RateLimit-* headers. The only quota-adjacent header is the
+      proprietary Ant-credits-cost. See rate-limits/scrapingant-rate-limits.yml.
+  - id: oauth2
+    name: OAuth 2.0
+    conforms: false
+    evidence: >-
+      API-key authentication only (x-api-key). /.well-known/oauth-authorization-server and
+      /.well-known/oauth-protected-resource returned 404 on every host.
+  - id: oidc
+    name: OpenID Connect
+    conforms: false
+    evidence: /.well-known/openid-configuration returned 404 on every host.
+  - id: a2a
+    name: A2A Agent Card
+    conforms: false
+    evidence: >-
+      /.well-known/agent-card.json and /.well-known/agent.json returned 404 on all three hosts.
+  - id: asyncapi
+    name: AsyncAPI
+    conforms: false
+    applicability: na
+    evidence: >-
+      ScrapingAnt publishes no webhook, event or streaming surface. Every endpoint is a
+      synchronous request/response fetch, so there is no event contract to specify.
+  - id: pagination
+    name: Pagination conventions
+    conforms: false
+    applicability: na
+    evidence: No collection endpoints exist.
+  - id: idempotency
+    name: Idempotency keys
+    conforms: false
+    applicability: na
+    evidence: >-
+      No write surface on ScrapingAnt itself. See conventions/scrapingant-conventions.yml
+      idempotency block for the method-pass-through caveat.
+  - id: json-api
+    name: JSON:API
+    conforms: false
+    evidence: Responses are plain HTML bodies or ad-hoc JSON objects; no JSON:API document structure.
+  - id: odata
+    name: OData
+    conforms: false
+    evidence: No $metadata surface; not a query-oriented API.
+  - id: scim
+    name: SCIM
+    conforms: false
+    applicability: na
+    evidence: No identity or provisioning surface.
+domain_standard:
+  applicable: false
+  market: Web data extraction / scraping infrastructure
+  note: >-
+    REWARD-ONLY dimension, correctly left empty. The web-scraping market has no ratified
+    interoperability standard - competitors (ScraperAPI, ScrapingBee, Scrapingdog, Zyte, Bright
+    Data) each ship a bespoke query-parameter contract, which is precisely why ScrapingAnt
+    publishes migration guides FROM three named competitors rather than a conformance claim.
+    The nearest thing to an emerging standard in this market is MCP for agent access, and
+    ScrapingAnt implements it - captured above as a cross-cutting conformance rather than as a
+    domain standard.
+  candidates_probed:
+    - standard: robots.txt / RFC 9309 Robots Exclusion Protocol
+      conforms: unstated
+      note: >-
+        The most relevant norm in this market. ScrapingAnt's product does not expose a
+        robots.txt-respecting mode, and neither the docs nor the terms of use state a policy on
+        honouring target-site robots directives. Recorded as unstated rather than false because
+        no published document either claims or disclaims it.
+compliance:
+  certifications: []
+  programs: []
+  note: >-
+    No SOC 2, ISO 27001, PCI DSS, HIPAA, GDPR-attestation or FedRAMP claim appears anywhere on
+    scrapingant.com or docs.scrapingant.com, and no trust center exists
+    (probe-security-programs.py returned vdp=none trust=none on 2026-08-29). A privacy policy
+    and terms of use are published, but a policy is not a certification. No Compliance pointer
+    is emitted in apis.yml, because there is nothing certified to point at.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

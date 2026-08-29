@@ -1,0 +1,112 @@
+generated: '2026-08-29'
+method: searched
+source: >-
+  registry.npmjs.org, pypi.org/pypi/*/json, api.github.com/orgs/ScrapingAnt/repos,
+  https://docs.scrapingant.com/python-client, https://docs.scrapingant.com/js-client,
+  https://docs.scrapingant.com/github-action, https://docs.scrapingant.com/n8n-integration
+provider: ScrapingAnt
+providerId: scrapingant
+description: >-
+  First-party ScrapingAnt client libraries and integration packages, with the latest published
+  version and release date read from each registry's metadata endpoint on 2026-08-29. The
+  headline finding is decay: both language SDKs are materially behind the API they wrap. The
+  JavaScript client last shipped in May 2022 and the Python client in July 2024, while the API
+  gained /v2/markdown, /v2/extract, /v2/extended and a hosted MCP server after those dates -
+  so neither SDK covers the endpoints ScrapingAnt now leads its marketing with. The packages
+  that ARE current are the integration nodes (n8n, GitHub Action), not the SDKs.
+packages:
+- name: scrapingant-client
+  registry: pypi
+  url: https://pypi.org/project/scrapingant-client/
+  language: Python
+  official: true
+  version: 2.1.0
+  published: '2024-07-16'
+  repository: https://github.com/ScrapingAnt/scrapingant-client-python
+  docs: https://docs.scrapingant.com/python-client
+  license: Apache-2.0
+  install: pip install scrapingant-client
+  versions_published: 5
+  note: >-
+    Official Python client. Latest release 2.1.0 (2024-07-16) predates the AI extractor,
+    Markdown endpoint and MCP server, so those surfaces are not wrapped.
+- name: '@scrapingant/scrapingant-client'
+  registry: npm
+  url: https://www.npmjs.com/package/@scrapingant/scrapingant-client
+  language: JavaScript
+  official: true
+  version: 0.2.1
+  published: '2022-05-06'
+  repository: https://github.com/ScrapingAnt/scrapingant-client-js
+  docs: https://docs.scrapingant.com/js-client
+  install: npm i @scrapingant/scrapingant-client
+  note: >-
+    Official JavaScript/Node client, still on a 0.x version and unreleased for over four years
+    as of this pass. The strongest abandonment signal in this repo: the GitHub source repo's
+    last push (2022-05-06) matches the last npm publish exactly.
+- name: n8n-nodes-scrapingant
+  registry: npm
+  url: https://www.npmjs.com/package/n8n-nodes-scrapingant
+  language: TypeScript
+  official: true
+  version: 0.1.6
+  published: '2026-04-14'
+  repository: https://github.com/ScrapingAnt/n8n-nodes-scrapingant
+  docs: https://docs.scrapingant.com/n8n-integration
+  install: npm i n8n-nodes-scrapingant
+  kind: integration-node
+  note: >-
+    n8n community node published by the ScrapingAnt org. Current - shipped four months before
+    this pass.
+- name: scrapingant-scrape-action
+  registry: github-marketplace
+  url: https://github.com/ScrapingAnt/scrapingant-scrape-action
+  language: JavaScript
+  official: true
+  version: null
+  published: '2026-04-03'
+  repository: https://github.com/ScrapingAnt/scrapingant-scrape-action
+  docs: https://docs.scrapingant.com/github-action
+  kind: github-action
+  note: >-
+    GitHub Action that scrapes pages as HTML, Markdown, or AI-extracted JSON in CI. Distributed
+    through the GitHub Marketplace, which has no version metadata endpoint to query - `version`
+    is null because there is nothing to read, and `published` is the repository's last push
+    date from api.github.com, not a release tag. Consumers pin it by git ref.
+registries_checked_no_result:
+- registry: npm
+  queries: [scrapingant, scrapingant-mcp, '@scrapingant/mcp', '@scrapingant/mcp-server']
+  result: 404
+  note: >-
+    ScrapingAnt ships NO stdio MCP package. Its MCP server is remote-only
+    (https://api.scrapingant.com/mcp/) - see mcp/scrapingant-mcp.yml.
+- registry: pypi
+  queries: [scrapingant, scrapingant-mcp-server]
+  result: 404
+- registry: rubygems
+  queries: [scrapingant-client]
+  result: 404
+- registry: maven-central
+  queries: [scrapingant]
+  result: not-published
+- registry: nuget
+  queries: [scrapingant]
+  result: not-published
+- registry: crates.io
+  queries: [scrapingant]
+  result: not-published
+- registry: packagist
+  queries: [scrapingant]
+  result: not-published
+summary:
+  official_sdk_count: 2
+  official_package_count: 4
+  languages: [Python, JavaScript, TypeScript]
+  most_recent_sdk_release: '2024-07-16'
+  oldest_sdk_release: '2022-05-06'
+  decay_finding: >-
+    Both first-party SDKs predate the API surface ScrapingAnt currently markets. A developer
+    following docs.scrapingant.com/js-client in 2026 installs a client last touched in 2022.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

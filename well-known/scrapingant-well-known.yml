@@ -1,0 +1,115 @@
+generated: '2026-08-29'
+method: probed
+source: live GET probes of /.well-known/* on every apis.yml and OpenAPI servers[] host
+description: >-
+  Probe record for RFC 8615 /.well-known/ discovery documents across every host ScrapingAnt
+  operates. Every path on every host returned 404. No WellKnown or SecurityTxt pointer is
+  emitted in apis.yml, because this file records an absence, not a presence.
+summary:
+  hosts_probed: 3
+  documents_probed: 24
+  documents_found: 0
+  security_txt: false
+  api_catalog: false
+  oauth_metadata: false
+  agent_card: false
+hosts:
+- host: scrapingant.com
+  note: >-
+    Marketing site (Astro/static). Every /.well-known/ path returns the site's own 404 page
+    with an HTTP 404 status - a correct hard 404, not a soft-200 SPA catch-all.
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: api.scrapingant.com
+  note: >-
+    Production API host (uvicorn/FastAPI). Returns a plain-text "404 page not found" for every
+    /.well-known/ path. Notably the host DOES serve a real OpenAPI at /openapi.json and a live
+    MCP server at /mcp/ - neither is advertised through a /.well-known/ document.
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: docs.scrapingant.com
+  note: >-
+    Docusaurus documentation host behind nginx/1.30.4. Every /.well-known/ path returns the
+    stock nginx 404 body.
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+recommendations:
+- >-
+  Serve /.well-known/security.txt (RFC 9116) on scrapingant.com naming a security contact and
+  disclosure policy. ScrapingAnt currently publishes no vulnerability-disclosure surface at all.
+- >-
+  Serve /.well-known/api-catalog (RFC 9727) on scrapingant.com pointing at
+  https://api.scrapingant.com/openapi.json. The OpenAPI is already public and correct; it is
+  simply undiscoverable without reading the docs site.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

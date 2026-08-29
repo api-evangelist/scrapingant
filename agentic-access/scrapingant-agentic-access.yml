@@ -1,20 +1,96 @@
-generated: '2026-07-15'
+generated: '2026-08-29'
 method: generated
-source: openapi/scrapingant-openapi.yml
+source: openapi/scrapingant-scraping-api-openapi.yml, openapi/scrapingant-usage-api-openapi.yml
 description: Recommended x-agentic-access execution contracts, classified heuristically from
   the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
   audience per deployment. See research/curity/agentic-governance/.
 summary:
-  operations: 1
+  operations: 6
   by_action_class:
-    connected: 1
+    acting: 4
+    connected: 2
   by_consequence:
-    read: 1
+    write: 4
+    read: 2
   human_in_the_loop_required: 0
 operations:
-- path: /general
+- path: /v2/general
+  method: post
+  operationId: scrapingant_general_request_v2_general_post
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/general
   method: get
-  operationId: scrape
+  operationId: scrapingant_general_request_v2_general_get
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v2/general
+  method: put
+  operationId: scrapingant_general_request_v2_general_put
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/general
+  method: patch
+  operationId: scrapingant_general_request_v2_general_patch
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/general
+  method: delete
+  operationId: scrapingant_general_request_v2_general_delete
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v2/usage
+  method: get
+  operationId: scrapingant_usage_v2_usage_get
   x-agentic-access:
     action-class: connected
     consequence: read

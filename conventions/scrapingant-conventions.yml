@@ -1,0 +1,148 @@
+generated: '2026-08-29'
+method: searched
+source: >-
+  https://docs.scrapingant.com/api-basics, https://docs.scrapingant.com/request-response-format,
+  https://docs.scrapingant.com/errors, https://docs.scrapingant.com/credits-cost,
+  https://docs.scrapingant.com/json-response, https://docs.scrapingant.com/llm-markdown,
+  openapi/_original/scrapingant-openapi.json
+provider: ScrapingAnt
+providerId: scrapingant
+description: >-
+  Cross-cutting runtime semantics for the ScrapingAnt API. ScrapingAnt is an unusually simple
+  API shape - a stateless fetch proxy with no resources, no records, and no writes to
+  ScrapingAnt itself - and most of the conventions below are therefore either trivially
+  satisfied or genuinely not applicable. Recording that honestly matters more than filling
+  slots: an agent needs to know that there is nothing here to be idempotent ABOUT, not that
+  idempotency is "missing".
+authentication:
+  style: api-key
+  parameter: x-api-key
+  transport: query parameter (primary), request header (documented as also accepted)
+  documented: https://docs.scrapingant.com/request-response-format
+  concern: >-
+    The published OpenAPI declares x-api-key as a REQUIRED QUERY PARAMETER and defines no
+    securitySchemes at all. Credentials in a query string land in server access logs, browser
+    history, and Referer headers. The docs and the homepage code samples show it as a header
+    (-H 'x-api-key: ...'), which is the safer form, but the contract does not describe that
+    option - so a code generator reading the spec will emit the leaky variant.
+  see: authentication/scrapingant-authentication.yml
+idempotency:
+  supported: false
+  applicability: na
+  header: null
+  note: >-
+    Not applicable rather than absent. Every ScrapingAnt operation is a READ of a third-party
+    URL - /v2/general, /v2/markdown, /v2/extract, /v2/extended and /v2/usage create and mutate
+    nothing on ScrapingAnt. Retrying a call costs credits but has no duplicate-side-effect
+    risk on the provider. The one nuance: /v2/general PROXIES the caller's HTTP method through
+    to the TARGET site, so a retried POST/PUT/DELETE may double-fire against a third party.
+    ScrapingAnt offers no idempotency key to protect that path, and does not document the
+    hazard.
+reversibility:
+  applicability: na
+  grade: na
+  reason: >-
+    ScrapingAnt exposes no write surface of its own. There are no created objects, no
+    transactions, no bookings, no deletions - nothing exists that could be cancelled, refunded,
+    voided or restored. Credits are consumed by a successful scrape and are non-refundable and
+    non-rolling by published policy, but credit consumption is metering, not an action with a
+    reversal operation.
+  write_surfaces: []
+  partial_exception:
+    surface: POST/PUT/PATCH/DELETE /v2/general
+    detail: >-
+      Method pass-through means an agent CAN cause a write - on the target site, not on
+      ScrapingAnt. Reversal of that write is entirely the target's concern and ScrapingAnt
+      documents no guardrail, no dry-run, and no confirmation step for it. An agent driving
+      /v2/general with a non-GET method is issuing an unguarded, unreversible third-party write
+      through a scraping proxy.
+  windows: []
+  note: >-
+    No reversal window is asserted here because the provider states none. Under the 0.12.0
+    rubric this is an honest `na`, not a zero.
+dry_run_mode:
+  supported: false
+  applicability: na
+  note: Read-only fetch API; no state-changing operation on ScrapingAnt to rehearse.
+pagination:
+  supported: false
+  applicability: na
+  note: >-
+    No collection endpoint exists. Every response is a single page fetch or a single usage
+    record.
+versioning:
+  style: uri-path
+  current: v2
+  base: https://api.scrapingant.com/v2
+  spec_version_field: v2
+  previous: >-
+    v1 documentation is still published and reachable at https://docs.scrapingant.com/v1/ with
+    its own sidebar, indicating a maintained-but-superseded generation.
+  deprecation_headers: false
+  note: >-
+    No Sunset or Deprecation header (RFC 8594) is documented or observed. There is no published
+    statement of how long v1 remains callable.
+error_envelope:
+  media_type: application/json
+  shape: '{"detail": "..."}'
+  rfc9457: false
+  see: errors/scrapingant-problem-types.yml
+rate_limit_signaling:
+  standard_headers: false
+  proprietary_header: Ant-credits-cost
+  status_on_concurrency: 409
+  status_on_quota: 403
+  retry_after: false
+  see: rate-limits/scrapingant-rate-limits.yml
+request_id_tracing:
+  supported: false
+  header: null
+  note: >-
+    No request-id or correlation-id header is documented, and none appeared in observed
+    response headers. A caller reporting a failed scrape to support has no identifier to quote.
+metadata:
+  supported: false
+  note: No caller-supplied metadata or tagging surface.
+field_expansion:
+  supported: false
+  note: >-
+    Nearest equivalent is endpoint selection rather than a query parameter - the same fetch is
+    exposed as /v2/general (HTML), /v2/markdown (Markdown), /v2/extended (JSON envelope with
+    cookies/headers/xhrs/iframes) and /v2/extract (AI-typed JSON). Format is chosen by PATH,
+    not by an `expand` or `fields` parameter.
+content_negotiation:
+  accept_header_honored: false
+  note: >-
+    Response format follows the path, not the Accept header. /v2/general returns text/html
+    body content regardless of Accept.
+request_encoding:
+  style: query-string
+  requirement: All parameters, including the target url, must be URL-encoded.
+  documented_helpers:
+    - 'Go: url.QueryEscape'
+    - 'Java: URLEncoder.encode'
+    - 'NodeJS: encodeURIComponent'
+    - 'PHP: urlencode'
+    - 'Python: urllib.parse.quote'
+    - 'Ruby: URI::escape'
+  note: >-
+    No request body is used even on POST/PUT/PATCH/DELETE - the method is a pass-through
+    signal and parameters stay in the query string.
+method_passthrough:
+  supported: true
+  detail: >-
+    Sending POST/PUT/PATCH/DELETE to /v2/general causes ScrapingAnt to issue that method
+    against the target URL. Documented at https://docs.scrapingant.com/post-put-delete.
+  safety_note: >-
+    This is the single highest-consequence behaviour in the API and it is controlled purely by
+    the caller's HTTP verb, with no confirmation, no dry-run, and no idempotency key.
+cross_links:
+  errors: errors/scrapingant-problem-types.yml
+  lifecycle: lifecycle/scrapingant-lifecycle.yml
+  authentication: authentication/scrapingant-authentication.yml
+  rate_limits: rate-limits/scrapingant-rate-limits.yml
+  plans: plans/scrapingant-plans-pricing.yml
+  mcp: mcp/scrapingant-mcp.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

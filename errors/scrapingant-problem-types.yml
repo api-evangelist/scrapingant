@@ -1,0 +1,129 @@
+generated: '2026-08-29'
+method: searched
+source: >-
+  https://docs.scrapingant.com/errors (error reference),
+  openapi/_original/scrapingant-openapi.json (4xx/5xx response objects),
+  live unauthenticated probe of https://api.scrapingant.com/v2/general 2026-08-29
+provider: ScrapingAnt
+providerId: scrapingant
+description: >-
+  ScrapingAnt's error catalog. The provider documents a complete status-code table and the API
+  returns a consistent JSON envelope, but it is NOT RFC 9457 - there is no
+  application/problem+json media type, no `type` URI, no `title`, and no machine-readable error
+  code. Every failure collapses into a single free-text `detail` string, so a client that needs
+  to branch on failure cause must match on the HTTP status (which is unambiguous for 5 of 8
+  cases) or string-match English prose.
+format: custom
+rfc9457: false
+media_type: application/json
+envelope:
+  shape: '{"detail": "<human-readable string>"}'
+  fields:
+    - name: detail
+      type: string
+      required: true
+      description: Human-readable error description. The only field in the envelope.
+  machine_readable_code: false
+  note: >-
+    On 422 the FastAPI-native shape is richer - HTTPValidationError carries
+    detail[] of ValidationError {loc[], msg, type} - but the live API returns a plain string
+    detail for a missing token, so a client must handle `detail` as EITHER a string OR an array
+    of objects depending on which validation path fired. That polymorphism is undeclared in the
+    published spec and is a real integration hazard.
+problem_types:
+  - status: 400
+    name: bad_request
+    title: Wrong request format
+    detail: Wrong request format. Make sure that you're using a proper JSON input.
+    retryable: false
+    remediation: Fix the request encoding. Query parameters must be URL-encoded.
+    source: https://docs.scrapingant.com/errors
+  - status: 403
+    name: forbidden
+    title: Invalid token or credits exhausted
+    detail: The API token is wrong or you have exceeded the API credits limit.
+    retryable: false
+    remediation: >-
+      Ambiguous by design - call GET /v2/usage to distinguish an exhausted plan
+      (remained_credits = 0) from a bad key. Top up or restart the plan mid-cycle if the
+      balance is zero; otherwise re-read the key from the dashboard.
+    ambiguous: true
+    source: https://docs.scrapingant.com/errors
+  - status: 404
+    name: target_unreachable
+    title: Requested URL is not reachable
+    detail: The requested URL is not reachable. Please, check it in your browser or try again.
+    retryable: true
+    remediation: >-
+      This 404 is about the TARGET site, not about the ScrapingAnt endpoint - a significant
+      semantic overload. Verify the target URL resolves, then retry.
+    source: https://docs.scrapingant.com/errors
+  - status: 405
+    name: method_not_allowed
+    title: Unsupported HTTP method
+    detail: 'The API endpoint can only be accessed using the following HTTP methods: GET, POST, PUT, DELETE.'
+    retryable: false
+    remediation: Use GET, POST, PUT or DELETE.
+    note: >-
+      The published OpenAPI ALSO declares a PATCH operation on /v2/general, which this
+      documented message excludes. Contract and error reference disagree.
+    source: https://docs.scrapingant.com/errors
+  - status: 409
+    name: concurrency_limit
+    title: Concurrent requests limit exceeded
+    detail: Concurrent requests limit exceeded. Please, try again or upgrade to the paid plan.
+    retryable: true
+    backoff: client-determined
+    remediation: >-
+      Reduce in-flight requests and retry. No Retry-After header is returned, so the client
+      owns the backoff schedule entirely.
+    source: https://docs.scrapingant.com/errors
+  - status: 422
+    name: validation_error
+    title: Invalid value provided
+    detail: Invalid value provided. Please, look into detail for more info.
+    retryable: false
+    remediation: Read `detail` for the offending parameter.
+    observed_live: true
+    observed_body: '{"detail":"API token is missing. Please check out the documentation: https://docs.scrapingant.com/"}'
+    note: >-
+      Also the status returned when x-api-key is absent entirely - verified live on 2026-08-29.
+      A missing credential returning 422 rather than 401 means a client cannot use the standard
+      "401 -> re-authenticate" branch.
+    source: https://docs.scrapingant.com/errors
+  - status: 423
+    name: antibot_detected
+    title: Anti-bot detection triggered
+    detail: The anti-bot detection system has detected the request. Please, retry or change the request settings.
+    retryable: true
+    remediation: >-
+      Retry, or change request settings - switch proxy_type to residential, set a
+      proxy_country, or enable browser rendering. This is the status an autonomous agent is
+      most likely to need to reason about, and it carries no structured hint about WHICH
+      setting to change.
+    source: https://docs.scrapingant.com/errors
+  - status: 500
+    name: server_error
+    title: Server-side failure
+    detail: Something went wrong with the server side code. Rare case. We're recommending to contact us in this case.
+    retryable: true
+    remediation: Retry; if persistent, contact ScrapingAnt support.
+    source: https://docs.scrapingant.com/errors
+coverage:
+  documented_statuses: 8
+  statuses_in_openapi: 8
+  agreement: >-
+    The published OpenAPI declares exactly the same eight statuses on POST/GET/PUT/PATCH/DELETE
+    /v2/general with the same descriptions. GET /v2/usage declares only 200 and 422, so the
+    403/409 paths that certainly apply to it are undeclared.
+gaps:
+  - No application/problem+json media type; no RFC 9457 type/title/instance.
+  - No stable machine-readable error code - callers must branch on HTTP status or English prose.
+  - 403 conflates authentication failure with quota exhaustion.
+  - 404 conflates a missing ScrapingAnt route with an unreachable TARGET site.
+  - 422 is used for a missing credential where 401 is expected.
+  - '`detail` is polymorphic (string or array of ValidationError) with no discriminator.'
+  - No Retry-After on 409 or 423, the two retryable throttle/defence statuses.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

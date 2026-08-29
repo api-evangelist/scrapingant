@@ -1,8 +1,13 @@
 aid: scrapingant
 name: ScrapingAnt
-description: >-
-  ScrapingAnt is a web scraping API service that handles proxy rotation,
-  headless browsers, and CAPTCHA solving for reliable web data extraction.
+description: ScrapingAnt is a web-data infrastructure platform operated by DATAANT that puts headless
+  Chrome rendering, a rotating pool of 3M+ residential and datacenter proxies, CAPTCHA avoidance and AI-powered
+  extraction behind a single HTTP API. One request returns a fully JavaScript-rendered page as raw HTML,
+  as LLM-ready Markdown, as an extended JSON envelope carrying cookies, headers, XHRs and iframes, or
+  as structured JSON described in plain English. A hosted, remote MCP server exposes three of those formats
+  as native tools to Claude, Cursor, Windsurf, Cline and VS Code, so an AI agent gets live web access
+  without running a browser locally. Billing is metered in API credits with a permanently free 10,000-credit
+  monthly tier; standalone rotating proxies are sold separately by bandwidth.
 type: Index
 deliveryModel:
   model: unknown
@@ -30,56 +35,170 @@ accessModel:
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/scrapingant.png
 tags:
-  - Data Extraction
-  - Proxies
-  - Scraping
-url: >-
-  https://raw.githubusercontent.com/api-evangelist/scrapingant/refs/heads/main/apis.yml
+- Data Extraction
+- Proxies
+- Scraping
+- Web Scraping
+- Headless Browsers
+- AI Agents
+- MCP
+- LLM
+- Data Collection
+- Web Data
+url: https://raw.githubusercontent.com/api-evangelist/scrapingant/refs/heads/main/apis.yml
 created: '2026-03-29'
-modified: '2026-03-29'
+modified: '2026-08-29'
 specificationVersion: '0.23'
 apis:
 - aid: scrapingant:scrapingant
   name: ScrapingAnt
-  description: >-
-    ScrapingAnt is a web scraping API service that handles proxy rotation, headless browsers, and CAPTCHA
-    solving for reliable web data extraction.
+  description: ScrapingAnt is a web scraping API service that handles proxy rotation, headless browsers,
+    and CAPTCHA solving for reliable web data extraction.
   humanURL: https://scrapingant.com/
   tags:
   - Data Extraction
   - Proxies
   - Scraping
+  - Web Scraping
+  - AI Agents
   properties:
   - type: Documentation
     url: https://docs.scrapingant.com/
   - type: GettingStarted
     url: https://docs.scrapingant.com/
+  - type: GettingStarted
+    url: https://docs.scrapingant.com/api-basics
+  - type: APIReference
+    url: https://docs.scrapingant.com/request-response-format
+  baseURL: https://api.scrapingant.com/v2
 - aid: scrapingant:scrapingant-scraping-api
   name: ScrapingAnt Scraping API
-  description: The Scraping API from ScrapingAnt — 1 operation(s) for scraping.
-  humanURL: https://scrapingant.com/
+  description: The ScrapingAnt web scraping endpoint. GET/POST/PUT/PATCH/DELETE /v2/general renders a
+    target URL in headless Chrome behind rotating proxies and returns the page HTML; a non-GET method
+    is proxied through to the target site. Contract harvested verbatim from https://api.scrapingant.com/openapi.json
+    on 2026-08-29.
+  humanURL: https://docs.scrapingant.com/api-basics
   tags:
   - Scraping
+  - Web Scraping
+  - Headless Browsers
   properties:
   - type: OpenAPI
     url: openapi/scrapingant-scraping-api-openapi.yml
-common:
-  - type: AgenticAccess
-    url: agentic-access/scrapingant-agentic-access.yml
-  - type: DomainSecurity
-    url: security/scrapingant-domain-security.yml
-  - type: Authentication
-    url: authentication/scrapingant-authentication.yml
-  - type: GitHubOrganization
-    url: https://github.com/ScrapingAnt
-  - type: LinkedIn
-    url: https://www.linkedin.com/company/scrapingant
-  - type: Website
-    url: https://scrapingant.com/
+  - type: Overlay
+    url: overlays/scrapingant-scraping-api-overlay.yaml
   - type: Documentation
-    url: https://docs.scrapingant.com/
-  - url: https://scrapingant.com/blog/rss.xml
-    type: Blog
+    url: https://docs.scrapingant.com/api-basics
+  - type: APIReference
+    url: https://api.scrapingant.com/docs
+  baseURL: https://api.scrapingant.com
+- aid: scrapingant:scrapingant-usage-api
+  name: ScrapingAnt Usage API
+  description: Account credit metering for ScrapingAnt. GET /v2/usage returns the current plan name, subscription
+    period, total plan credits and remaining credits - the only way to observe budget on an API that publishes
+    no rate-limit headers and returns an ambiguous 403 when credits are exhausted.
+  humanURL: https://docs.scrapingant.com/api-credits-usage
+  baseURL: https://api.scrapingant.com
+  tags:
+  - Usage
+  - Billing
+  - Metering
+  properties:
+  - type: OpenAPI
+    url: openapi/scrapingant-usage-api-openapi.yml
+  - type: Documentation
+    url: https://docs.scrapingant.com/api-credits-usage
+- aid: scrapingant:scrapingant-mcp-server
+  name: ScrapingAnt MCP Server
+  description: First-party hosted remote MCP server at https://api.scrapingant.com/mcp/ exposing get_web_page_html,
+    get_web_page_markdown and get_web_page_text to MCP clients over streamable HTTP, authenticated with
+    the same x-api-key. tools/list answers anonymously, so an agent can read the real input schemas before
+    it holds a key.
+  humanURL: https://docs.scrapingant.com/mcp-server
+  baseURL: https://api.scrapingant.com/mcp/
+  tags:
+  - MCP
+  - AI Agents
+  - Scraping
+  properties:
+  - type: MCPServer
+    url: mcp/scrapingant-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/scrapingant-tool-crosswalk.yml
+  - type: Documentation
+    url: https://docs.scrapingant.com/mcp-server
+common:
+- type: AgenticAccess
+  url: agentic-access/scrapingant-agentic-access.yml
+- type: DomainSecurity
+  url: security/scrapingant-domain-security.yml
+- type: Authentication
+  url: authentication/scrapingant-authentication.yml
+- type: GitHubOrganization
+  url: https://github.com/ScrapingAnt
+- type: LinkedIn
+  url: https://www.linkedin.com/company/scrapingant
+- type: Website
+  url: https://scrapingant.com/
+- type: Documentation
+  url: https://docs.scrapingant.com/
+- url: https://scrapingant.com/blog/rss.xml
+  type: Blog
+- type: Packages
+  url: packages/scrapingant-packages.yml
+- type: SDKs
+  url: packages/scrapingant-packages.yml
+- type: MCPServer
+  url: mcp/scrapingant-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/scrapingant-tool-crosswalk.yml
+- type: LLMsTxt
+  url: llms/scrapingant-llms.txt
+- type: Overlay
+  url: overlays/scrapingant-scraping-api-overlay.yaml
+- type: Conformance
+  url: conformance/scrapingant-conformance.yml
+- type: ErrorCatalog
+  url: errors/scrapingant-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/scrapingant-lifecycle.yml
+- type: Conventions
+  url: conventions/scrapingant-conventions.yml
+- type: DataModel
+  url: data-model/scrapingant-data-model.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Plans
+  url: plans/scrapingant-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/scrapingant-rate-limits.yml
+- type: FinOps
+  url: finops/scrapingant-finops.yml
+- type: DeveloperPortal
+  url: https://docs.scrapingant.com/
+- type: APIReference
+  url: https://api.scrapingant.com/docs
+- type: GettingStarted
+  url: https://docs.scrapingant.com/api-basics
+- type: Pricing
+  url: https://scrapingant.com/#pricing
+- type: SignUp
+  url: https://app.scrapingant.com/signup
+- type: Login
+  url: https://app.scrapingant.com/login
+- type: TermsOfService
+  url: https://scrapingant.com/legal/terms-of-use
+- type: PrivacyPolicy
+  url: https://scrapingant.com/legal/privacy-policy
+- type: Support
+  url: https://scrapingant.com/#contact
+- type: Twitter
+  url: https://twitter.com/ScrapingAnt
 maintainers:
-  - FN: Kin Lane
-    email: kin@apievangelist.com
+- FN: Kin Lane
+  email: kin@apievangelist.com
+x-enrichment:
+  date: '2026-08-29'
+  status: enriched
+  artifacts_added: 18
+  pass: local-v1
