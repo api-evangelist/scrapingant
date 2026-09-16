@@ -54,8 +54,9 @@ specificationVersion: '0.23'
 apis:
 - aid: scrapingant:scrapingant
   name: ScrapingAnt
-  description: ScrapingAnt is a web scraping API service that handles proxy rotation, headless browsers,
-    and CAPTCHA solving for reliable web data extraction.
+  description: >-
+    ScrapingAnt is a web scraping API service that handles proxy rotation, headless browsers, and CAPTCHA
+    solving for reliable web data extraction.
   humanURL: https://scrapingant.com/
   tags:
   - Data Extraction
@@ -75,9 +76,10 @@ apis:
   baseURL: https://api.scrapingant.com/v2
 - aid: scrapingant:scrapingant-scraping-api
   name: ScrapingAnt Scraping API
-  description: The ScrapingAnt web scraping endpoint. GET/POST/PUT/PATCH/DELETE /v2/general renders a
-    target URL in headless Chrome behind rotating proxies and returns the page HTML; a non-GET method
-    is proxied through to the target site. Contract harvested verbatim from https://api.scrapingant.com/openapi.json
+  description: >-
+    The ScrapingAnt web scraping endpoint. GET/POST/PUT/PATCH/DELETE /v2/general renders a target URL
+    in headless Chrome behind rotating proxies and returns the page HTML; a non-GET method is proxied
+    through to the target site. Contract harvested verbatim from https://api.scrapingant.com/openapi.json
     on 2026-08-29.
   humanURL: https://docs.scrapingant.com/api-basics
   tags:
@@ -96,7 +98,8 @@ apis:
   baseURL: https://api.scrapingant.com
 - aid: scrapingant:scrapingant-usage-api
   name: ScrapingAnt Usage API
-  description: Account credit metering for ScrapingAnt. GET /v2/usage returns the current plan name, subscription
+  description: >-
+    Account credit metering for ScrapingAnt. GET /v2/usage returns the current plan name, subscription
     period, total plan credits and remaining credits - the only way to observe budget on an API that publishes
     no rate-limit headers and returns an ambiguous 403 when credits are exhausted.
   humanURL: https://docs.scrapingant.com/api-credits-usage
@@ -112,7 +115,8 @@ apis:
     url: https://docs.scrapingant.com/api-credits-usage
 - aid: scrapingant:scrapingant-mcp-server
   name: ScrapingAnt MCP Server
-  description: First-party hosted remote MCP server at https://api.scrapingant.com/mcp/ exposing get_web_page_html,
+  description: >-
+    First-party hosted remote MCP server at https://api.scrapingant.com/mcp/ exposing get_web_page_html,
     get_web_page_markdown and get_web_page_text to MCP clients over streamable HTTP, authenticated with
     the same x-api-key. tools/list answers anonymously, so an agent can read the real input schemas before
     it holds a key.
@@ -129,6 +133,16 @@ apis:
     url: mcp/scrapingant-tool-crosswalk.yml
   - type: Documentation
     url: https://docs.scrapingant.com/mcp-server
+- aid: scrapingant:scrapingant-general-api
+  name: ScrapingAnt General API
+  description: The General API from ScrapingAnt — 1 operation(s) for general.
+  humanURL: https://scrapingant.com/
+  baseURL: https://api.scrapingant.com/v2
+  tags:
+  - General
+  properties:
+  - type: OpenAPI
+    url: openapi/scrapingant-general-api-openapi.yml
 common:
 - type: AgenticAccess
   url: agentic-access/scrapingant-agentic-access.yml
