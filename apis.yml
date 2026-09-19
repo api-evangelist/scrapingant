@@ -41,6 +41,17 @@ tags:
 - Proxies
 - Scraping
 - Web Scraping
+- Headless Browser
+- AI Agents
+- MCP
+- LLM
+- Data Collection
+- Web Data
+tags_raw:
+- Data Extraction
+- Proxies
+- Scraping
+- Web Scraping
 - Headless Browsers
 - AI Agents
 - MCP
@@ -83,6 +94,10 @@ apis:
     on 2026-08-29.
   humanURL: https://docs.scrapingant.com/api-basics
   tags:
+  - Scraping
+  - Web Scraping
+  - Headless Browser
+  tags_raw:
   - Scraping
   - Web Scraping
   - Headless Browsers
@@ -138,7 +153,8 @@ apis:
   description: The General API from ScrapingAnt — 1 operation(s) for general.
   humanURL: https://scrapingant.com/
   baseURL: https://api.scrapingant.com/v2
-  tags:
+  tags: []
+  tags_raw:
   - General
   properties:
   - type: OpenAPI
