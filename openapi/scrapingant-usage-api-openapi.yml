@@ -1,17 +1,15 @@
 openapi: 3.2.0
 info:
-  title: ScrapingAnt Usage API
-  description: ScrapingAnt web scraping API. Harvested verbatim from the provider's published OpenAPI at https://api.scrapingant.com/openapi.json
-    on 2026-08-29 and refined into one document per tag. The original document declares no tags and reuses a single
-    operationId across all five HTTP methods on /v2/general; unique operationIds were assigned here and the divergence
-    is recorded in overlays/scrapingant-scraping-api-overlay.yaml. No operation, parameter, response or schema was
-    added, removed or altered.
+  title: Scrapingant Usage API
+  description: 'The only 2 things needed to start working with ScrapingAnt API: URL you''d like to scrape, and the API key. Provide them to /v2/general GET endpoint, and you''ll get the scraped content.
+
+    To send a POST / PUT / DELETE / PATCH request to the target url, send the POST / PUT / DELETE / PAST request to the main endpoint with your x-api-key and url parameters.'
   version: v2
+  x-logo:
+    url: https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png
 servers:
 - url: https://api.scrapingant.com
   description: Production ScrapingAnt API
-security:
-- ApiKeyAuth: []
 tags:
 - name: Usage
 paths:
@@ -38,13 +36,33 @@ paths:
         required: true
         schema:
           type: string
-        description: API token, required for authentication. You can find your API token on the dashboard page in
-          the user's admin panel.
+        description: API token, required for authentication. You can find your API token on the dashboard page in the user's admin panel.
       description: Get current status of API credits usage
       tags:
       - Usage
 components:
   schemas:
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
     ApiGeneralUsageResponse:
       properties:
         plan_name:
@@ -81,31 +99,3 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
-    ValidationError:
-      properties:
-        loc:
-          items:
-            anyOf:
-            - type: string
-            - type: integer
-          type: array
-          title: Location
-        msg:
-          type: string
-          title: Message
-        type:
-          type: string
-          title: Error Type
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      title: ValidationError
-  securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: query
-      name: x-api-key
-      description: ScrapingAnt API key, passed as the x-api-key query parameter. The provider also accepts it as
-        an x-api-key request header (docs.scrapingant.com/request-response-format).

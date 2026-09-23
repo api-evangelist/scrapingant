@@ -1,17 +1,35 @@
 {
   "provider": "scrapingant",
   "sources": [
-    "scrapingant-scraping-api-openapi.yml"
+    "_original/scrapingant-openapi.json",
+    "_original/scrapingant-openapi.yml"
   ],
   "outputs": [
+    "scrapingant-general-api-openapi.yml",
+    "scrapingant-usage-api-openapi.yml",
     "scrapingant-scraping-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
-    "scrapingant-scraping-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "scrapingant-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "scrapingant-openapi.json: tagged paths POST /v2/general -> General",
+    "scrapingant-openapi.json: tagged paths GET /v2/general -> General",
+    "scrapingant-openapi.json: tagged paths PUT /v2/general -> General",
+    "scrapingant-openapi.json: tagged paths PATCH /v2/general -> General",
+    "scrapingant-openapi.json: tagged paths DELETE /v2/general -> General",
+    "scrapingant-openapi.json: tagged paths GET /v2/usage -> Usage",
+    "scrapingant-openapi.json: declared missing tag: General",
+    "scrapingant-openapi.json: declared missing tag: Usage",
+    "scrapingant-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "scrapingant-openapi.yml: declared missing tag: Scraping",
     "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "scrapingant-general-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "scrapingant-scraping-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "scrapingant-usage-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
