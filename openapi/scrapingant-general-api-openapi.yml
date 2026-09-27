@@ -171,7 +171,7 @@ paths:
       - General
     get:
       summary: Scrapingant General Request
-      operationId: scrapingant_general_request_v2_general_post
+      operationId: getV2General
       responses:
         '200':
           description: Successful response. ScrapingAnt web scraping API endpoint returns plain html content  of the scraped web page
@@ -324,9 +324,11 @@ paths:
         example: document
       tags:
       - General
+      x-operation-id-source: normalized
+      x-operation-id-original: scrapingant_general_request_v2_general_post
     put:
       summary: Scrapingant General Request
-      operationId: scrapingant_general_request_v2_general_post
+      operationId: putV2General
       responses:
         '200':
           description: Successful response. ScrapingAnt web scraping API endpoint returns plain html content  of the scraped web page
@@ -479,9 +481,11 @@ paths:
         example: document
       tags:
       - General
+      x-operation-id-source: normalized
+      x-operation-id-original: scrapingant_general_request_v2_general_post
     patch:
       summary: Scrapingant General Request
-      operationId: scrapingant_general_request_v2_general_post
+      operationId: patchV2General
       responses:
         '200':
           description: Successful response. ScrapingAnt web scraping API endpoint returns plain html content  of the scraped web page
@@ -634,9 +638,11 @@ paths:
         example: document
       tags:
       - General
+      x-operation-id-source: normalized
+      x-operation-id-original: scrapingant_general_request_v2_general_post
     delete:
       summary: Scrapingant General Request
-      operationId: scrapingant_general_request_v2_general_post
+      operationId: deleteV2General
       responses:
         '200':
           description: Successful response. ScrapingAnt web scraping API endpoint returns plain html content  of the scraped web page
@@ -789,6 +795,8 @@ paths:
         example: document
       tags:
       - General
+      x-operation-id-source: normalized
+      x-operation-id-original: scrapingant_general_request_v2_general_post
 components:
   schemas:
     ValidationError:
