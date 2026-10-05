@@ -1,0 +1,12 @@
+{
+ "url": "https://api.scrapingant.com/openapi.json",
+ "requested_url": "https://api.scrapingant.com/openapi.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 25538,
+ "sha256": "4d06eedc40a97df74b90442e63384c7aee1dec479f152d14194c2924c4be5894",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 1.0), but the bytes differ, so the archive is an earlier or reformatted copy."
+}
