@@ -254,3 +254,59 @@ proxy_plans:
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  units:
+  - credit
+  plans:
+  - name: Free
+    access: freemium
+    model: free
+    model_how: derived
+    units:
+    - credit
+    periods:
+    - month
+  - name: Enthusiast
+    access: paid
+    model: free
+    model_how: derived
+    units:
+    - credit
+    periods:
+    - month
+  - name: Startup
+    access: paid
+    model: free
+    model_how: derived
+    units:
+    - credit
+    periods:
+    - month
+  - name: Business
+    access: paid
+    model: free
+    model_how: derived
+    units:
+    - credit
+    periods:
+    - month
+  - name: Business Pro
+    access: paid
+    model: free
+    model_how: derived
+    units:
+    - credit
+    periods:
+    - month
+  - name: Custom
+    access: enterprise
+    model: free
+    model_how: derived
+    units:
+    - credit
+    periods:
+    - month
