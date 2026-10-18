@@ -39,7 +39,6 @@ image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/scrapingan
 tags:
 - Data Extraction
 - Proxies
-- Scraping
 - Web Scraping
 - Headless Browser
 - AI Agents
@@ -72,6 +71,11 @@ apis:
   tags:
   - Data Extraction
   - Proxies
+  - Web Scraping
+  - AI Agents
+  tags_raw:
+  - Data Extraction
+  - Proxies
   - Scraping
   - Web Scraping
   - AI Agents
@@ -94,7 +98,6 @@ apis:
     on 2026-08-29.
   humanURL: https://docs.scrapingant.com/api-basics
   tags:
-  - Scraping
   - Web Scraping
   - Headless Browser
   tags_raw:
@@ -138,6 +141,10 @@ apis:
   humanURL: https://docs.scrapingant.com/mcp-server
   baseURL: https://api.scrapingant.com/mcp/
   tags:
+  - MCP
+  - AI Agents
+  - Web Scraping
+  tags_raw:
   - MCP
   - AI Agents
   - Scraping
