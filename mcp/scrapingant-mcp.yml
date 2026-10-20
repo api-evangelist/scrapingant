@@ -1,18 +1,14 @@
 generated: '2026-08-29'
 method: probed
-source: >-
-  https://api.scrapingant.com/mcp/ (anonymous JSON-RPC tools/list, HTTP 200) and
-  https://docs.scrapingant.com/mcp-server
+source: https://api.scrapingant.com/mcp/ (anonymous JSON-RPC tools/list, HTTP 200) and https://docs.scrapingant.com/mcp-server
 name: ScrapingAnt MCP Server
 provider: ScrapingAnt
 providerId: scrapingant
-description: >-
-  ScrapingAnt operates a first-party hosted MCP server that gives an AI agent live web access
-  through the same headless-Chrome cluster and rotating proxy pool that backs the /v2/general
-  REST endpoint. Three tools return the same fetched page in three formats - raw HTML, cleaned
-  Markdown, and plain text - so the agent can pick the representation that fits the task.
-  Authentication is the same x-api-key the REST API uses, sent as an HTTP header, and MCP calls
-  draw down the same API-credit pool.
+description: ScrapingAnt operates a first-party hosted MCP server that gives an AI agent live web access
+  through the same headless-Chrome cluster and rotating proxy pool that backs the /v2/general REST endpoint.
+  Three tools return the same fetched page in three formats - raw HTML, cleaned Markdown, and plain text
+  - so the agent can pick the representation that fits the task. Authentication is the same x-api-key
+  the REST API uses, sent as an HTTP header, and MCP calls draw down the same API-credit pool.
 status: live
 deployment:
   mode: remote
@@ -24,20 +20,18 @@ deployment:
 transport:
   protocol: streamable-http
   declared_as: streamableHttp
-  note: >-
-    https://api.scrapingant.com/mcp (no trailing slash) answers HTTP 307 and redirects to
-    /mcp/. The provider's own published configuration snippets use the un-slashed form for
-    Claude Desktop, Cursor, Claude Code and Cline, and the slashed form for VS Code; both
-    resolve. tools/list was probed successfully against the slashed URL.
+  note: https://api.scrapingant.com/mcp (no trailing slash) answers HTTP 307 and redirects to /mcp/. The
+    provider's own published configuration snippets use the un-slashed form for Claude Desktop, Cursor,
+    Claude Code and Cline, and the slashed form for VS Code; both resolve. tools/list was probed successfully
+    against the slashed URL.
 authentication:
   scheme: api-key
   header: x-api-key
   obtained_from: https://app.scrapingant.com/signup
   anonymous_introspection: true
-  note: >-
-    tools/list returns the complete tool set with full inputSchema WITHOUT credentials - the
-    schema surface is open even though tool invocation requires a key. This is the best case
-    for agent discovery: a client can plan against the real schemas before a key exists.
+  note: 'tools/list returns the complete tool set with full inputSchema WITHOUT credentials - the schema
+    surface is open even though tool invocation requires a key. This is the best case for agent discovery:
+    a client can plan against the real schemas before a key exists.'
 clients_documented:
 - Claude Desktop
 - Claude Code (CLI)
@@ -47,21 +41,13 @@ clients_documented:
 - VS Code / GitHub Copilot
 install_examples:
 - client: Claude Code
-  command: >-
-    claude mcp add scrapingant --transport http https://api.scrapingant.com/mcp
-    -H "x-api-key: <YOUR-API-KEY>"
+  command: 'claude mcp add scrapingant --transport http https://api.scrapingant.com/mcp -H "x-api-key:
+    <YOUR-API-KEY>"'
   source: https://docs.scrapingant.com/mcp-server
 - client: Cursor / Windsurf / Claude Desktop / Cline
-  config: |
-    {
-      "mcpServers": {
-        "scrapingant": {
-          "url": "https://api.scrapingant.com/mcp",
-          "transport": "streamableHttp",
-          "headers": { "x-api-key": "<YOUR-API-KEY>" }
-        }
-      }
-    }
+  config: "{\n  \"mcpServers\": {\n    \"scrapingant\": {\n      \"url\": \"https://api.scrapingant.com/mcp\"\
+    ,\n      \"transport\": \"streamableHttp\",\n      \"headers\": { \"x-api-key\": \"<YOUR-API-KEY>\"\
+    \ }\n    }\n  }\n}\n"
   source: https://docs.scrapingant.com/mcp-server
 tools:
 - name: get_web_page_html
@@ -80,15 +66,13 @@ tools:
     type: string
     required: false
     default: datacenter
-    description: >-
-      Type of proxy to use. Use 'residential' when facing anti-bot detection.
+    description: Type of proxy to use. Use 'residential' when facing anti-bot detection.
   - name: proxy_country
     type: string
     required: false
     default: null
-    description: >-
-      ISO-3166 country code. Published set: ae, au, br, ca, cn, cz, de, es, fr, gb, hk, id,
-      il, in, it, jp, kr, my, nl, ph, pl, ru, sa, sg, th, us, vn.
+    description: 'ISO-3166 country code. Published set: ae, au, br, ca, cn, cz, de, es, fr, gb, hk, id,
+      il, in, it, jp, kr, my, nl, ph, pl, ru, sa, sg, th, us, vn.'
   output: 'string (wrapped by FastMCP as {"result": <string>})'
 - name: get_web_page_markdown
   description: Fetch (scrape) a URL using ScrapingAnt and return the web page content as Markdown.
@@ -132,20 +116,17 @@ capabilities:
   tools: true
   resources: false
   prompts: false
-  note: >-
-    Only tools/list was probed. resources/list and prompts/list were not exercised, so the
-    false values above are "not observed", not "confirmed absent".
+  note: Only tools/list was probed. resources/list and prompts/list were not exercised, so the false values
+    above are "not observed", not "confirmed absent".
 raw_manifest: mcp/scrapingant-mcp-tools-list.json
 implementation:
   framework: FastMCP
-  evidence: >-
-    Every tool carries an outputSchema titled _WrappedResult with the
-    x-fastmcp-wrap-result extension and a _meta._fastmcp block.
+  evidence: Every tool carries an outputSchema titled _WrappedResult with the x-fastmcp-wrap-result extension
+    and a _meta._fastmcp block.
 billing:
   model: api-credits
-  note: >-
-    MCP requests consume the same API credits as direct REST calls; the credit cost table at
-    https://docs.scrapingant.com/credits-cost applies. Failed requests cost 0 credits.
+  note: MCP requests consume the same API credits as direct REST calls; the credit cost table at https://docs.scrapingant.com/credits-cost
+    applies. Failed requests cost 0 credits.
 x-evidence:
   fetched: '2026-08-29'
   method: POST
@@ -158,3 +139,28 @@ x-evidence:
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
+tool_quality:
+  tool_count: 3
+  tokens_total: 1114
+  tokens_per_tool_median: 372
+  heavy_tools: []
+  heavy_tool_count: 0
+  params_total: 12
+  params_undescribed: 12
+  params_described_pct: 0.0
+  tools_with_undescribed_params: 3
+  tools_annotated: 0
+  annotated_pct: 0.0
+  state_changing_unhinted: []
+  tools_missing_schema: 0
+  short_descriptions: 0
+  duplicate_descriptions: 0
+  duplicate_names: 0
+  nonportable_names: []
+  output_schema_count: 3
+  token_estimate: chars/3.6 of each compact tool definition
+  source: mcp/scrapingant-mcp-tools-list.json
+  measured: '2026-10-20'
+  scored: false
+  note: Facts from the saved tools/list capture (mcp_tool_quality.py); recorded, not scored. Checks learned
+    from Glimind's agent-readiness audit.
