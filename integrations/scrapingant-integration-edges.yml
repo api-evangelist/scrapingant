@@ -1,4 +1,34 @@
 edges:
+- partner_name: npm registry
+  partner: npm
+  partner_match: register
+  type: register
+  direction: provider-built
+  category: official SDK (JavaScript/TypeScript)
+  evidence: https://www.npmjs.com/package/@scrapingant/scrapingant-client
+  channel: package-registry
+  relationship: distribution-channel
+  contract_reference:
+    register: npm registry (public registry JSON)
+    spec_file: null
+    language: JavaScript/TypeScript
+    packages:
+    - name: '@scrapingant/scrapingant-client'
+      version: 0.2.1
+      released: '2022-05-06'
+      released_field: modified
+      lapsed: true
+      page: https://www.npmjs.com/package/@scrapingant/scrapingant-client
+      repo_leg: domain:scrapingant.com
+      publisher_leg: email:scrapingant.com
+      matched_by: domain
+    current: false
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  detected_by: sweep-official-sdks.py
+  first_seen: '2026-10-18'
 - partner_name: MCP Registry
   partner: mcp
   partner_match: register
@@ -14,7 +44,7 @@ edges:
     registered_name: com.scrapingant/mcp
     register_id: com.scrapingant/mcp
     detected_by: sweep-agent-tools.py
-    detected: '2026-10-15'
+    detected: '2026-10-19'
   mcp_registry:
     servers:
     - com.scrapingant/mcp
@@ -63,7 +93,7 @@ edges:
   channel: open-source-node
   relationship: ipaas-bridge
   direction: third-party
-  evidence: https://github.com/PipedreamHQ/pipedream/tree/94800dd6de6640b942c65ea7ee655f71ac56d438/components/scrapingant
+  evidence: https://github.com/PipedreamHQ/pipedream/tree/d5872355ef27b4efa769f05352f2820c299a456e/components/scrapingant
   category: null
   contract_reference:
     register: Pipedream components (PipedreamHQ/pipedream components/)
@@ -81,42 +111,13 @@ edges:
     builder: Pipedream repo (component)
   detected_by: sweep-workflow-automation.py
   first_seen: '2026-10-15'
-- partner_name: npm registry
-  partner: npm
-  partner_match: register
-  type: register
-  direction: provider-built
-  category: official SDK (JavaScript/TypeScript)
-  evidence: https://www.npmjs.com/package/@scrapingant/scrapingant-client
-  channel: package-registry
-  relationship: distribution-channel
-  contract_reference:
-    register: npm registry (public registry JSON)
-    spec_file: null
-    language: JavaScript/TypeScript
-    packages:
-    - name: '@scrapingant/scrapingant-client'
-      version: 0.2.1
-      released: '2022-05-06'
-      released_field: modified
-      lapsed: true
-      page: https://www.npmjs.com/package/@scrapingant/scrapingant-client
-      repo_leg: domain:scrapingant.com
-      publisher_leg: email:scrapingant.com
-      matched_by: domain
-    current: false
-    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
-      24 months'
-    detected_by: sweep-official-sdks.py
-    detected: '2026-10-18'
-  detected_by: sweep-official-sdks.py
-  first_seen: '2026-10-18'
 generated: '2026-10-14'
 method: searched
 checked:
 - https://api.nuget.org/v3
 - https://crates.io/api/v1
 - https://github.com/PipedreamHQ/pipedream/tree/94800dd6de6640b942c65ea7ee655f71ac56d438/components/
+- https://github.com/PipedreamHQ/pipedream/tree/d5872355ef27b4efa769f05352f2820c299a456e/components/
 - https://proxy.golang.org
 - https://pypi.org/pypi
 - https://registry.modelcontextprotocol.io/v0/servers
