@@ -51,7 +51,13 @@ install_examples:
   source: https://docs.scrapingant.com/mcp-server
 tools:
 - name: get_web_page_html
-  description: Fetch (scrape) a URL using ScrapingAnt and return the web page content as HTML.
+  description: "Fetch (scrape) a URL using ScrapingAnt and return the web page content as HTML.\n\nArgs:\n\
+    \    url: The URL of the page to extract (scrape).\n    browser: Whether to use browser rendering.\
+    \ Default: True.\n    proxy_type: Type of proxy to use. Default: 'datacenter'.\n        Use 'residential'\
+    \ if you encounter anti-bot detection, which improves anti-bot avoidance.\n    proxy_country: Optional\
+    \ ISO-3166 country code. Default: random worldwide proxy.\n        Use when facing geo-restrictions.\
+    \ Available country codes: ae, br, bz, ca, ch, cn, cz, de, es, fr, gb, hk, id, il, in, it, jp, kr,\
+    \ mx, my, nh, nl, ph, pk, pl, ro, ru, sa, sc, se, sg, th, tr, tw, uk, us, vn."
   parameters:
   - name: url
     type: string
@@ -75,7 +81,13 @@ tools:
       il, in, it, jp, kr, my, nl, ph, pl, ru, sa, sg, th, us, vn.'
   output: 'string (wrapped by FastMCP as {"result": <string>})'
 - name: get_web_page_markdown
-  description: Fetch (scrape) a URL using ScrapingAnt and return the web page content as Markdown.
+  description: "Fetch (scrape) a URL using ScrapingAnt and return the web page content as Markdown.\n\n\
+    Args:\n    url: The URL of the page to extract (scrape).\n    browser: Whether to use browser rendering.\
+    \ Default: True.\n    proxy_type: Type of proxy to use. Default: 'datacenter'.\n        Use 'residential'\
+    \ if you encounter anti-bot detection, which improves anti-bot avoidance.\n    proxy_country: Optional\
+    \ ISO-3166 country code. Default: random worldwide proxy.\n        Use when facing geo-restrictions.\
+    \ Available country codes: ae, br, bz, ca, ch, cn, cz, de, es, fr, gb, hk, id, il, in, it, jp, kr,\
+    \ mx, my, nh, nl, ph, pk, pl, ro, ru, sa, sc, se, sg, th, tr, tw, uk, us, vn."
   parameters:
   - name: url
     type: string
@@ -94,7 +106,13 @@ tools:
     default: null
   output: 'string (wrapped by FastMCP as {"result": <string>})'
 - name: get_web_page_text
-  description: Fetch (scrape) a URL using ScrapingAnt and return the web page content as plain text.
+  description: "Fetch (scrape) a URL using ScrapingAnt and return the web page content as plain text.\n\
+    \nArgs:\n    url: The URL of the page to extract (scrape).\n    browser: Whether to use browser rendering.\
+    \ Default: True.\n    proxy_type: Type of proxy to use. Default: 'datacenter'.\n        Use 'residential'\
+    \ if you encounter anti-bot detection, which improves anti-bot avoidance.\n    proxy_country: Optional\
+    \ ISO-3166 country code. Default: random worldwide proxy.\n        Use when facing geo-restrictions.\
+    \ Available country codes: ae, br, bz, ca, ch, cn, cz, de, es, fr, gb, hk, id, il, in, it, jp, kr,\
+    \ mx, my, nh, nl, ph, pk, pl, ro, ru, sa, sc, se, sg, th, tr, tw, uk, us, vn."
   parameters:
   - name: url
     type: string
@@ -164,3 +182,4 @@ tool_quality:
   scored: false
   note: Facts from the saved tools/list capture (mcp_tool_quality.py); recorded, not scored. Checks learned
     from Glimind's agent-readiness audit.
+tools_count: 3
